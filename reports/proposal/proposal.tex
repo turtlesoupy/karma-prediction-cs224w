@@ -25,12 +25,8 @@
 \maketitle
 
 \section{Introduction}
-Our project blah blah blah
 
 \section{Reaction Paper}
-Summary, critique, brainstorming.
-
-
 \subsection{Quantifying Influence on Twitter}
 In \titlecite{Everyone's an influencer: quantifying influence on twitter}{bakshy2011everyone}, 
 some stuff happens.
@@ -50,6 +46,30 @@ some stuff happens.
 %    can see what actually corresponds to karma
 
 \subsection{Twitterrank}
+In \titlecite{Twitterrank: finding topic-sensitive influential twitterers}{weng2010twitterrank}, 
+some nifty jazz occurs.
+% ROUGH NOTES
+% * Paper comes up with a new ranking algorithm it claims corresponds to influence on twitter
+% * Claims PageRank ignores the /interest/ of twitter
+% * Aggregates tweets of a user into a single document and performs LDA on the resultant docs
+% * Idea: followers are likely to have similar probability distributions over topics (
+%   as measured by KL-divergence)
+% ** Validates this hypothesis on their dataset emphatically
+% * Invents a modified version of topic sensitive page rank that has transition probabilities
+%   to all nodes affected by their topic similarity.
+% * Evaluation: remove follower/target relationship, run algorithm, see if they can predict the relationship
+% ** Algorithm performs very well in this task
+% * They quantify general influence as a weighted sum over topic-specific influences
+% * Take aways:
+% ** It seems plausible that karma is influenced by the primary subject area of the poster
+% ** We might require multiple models for karma depending on topic
+% ** We should validate the hypothesis that repliers and posters tend to have similar topic distributions
+% ** It is possible that karma is related to PageRank, and refined with topic sensitive PageRank
+% * Paper issues:
+% ** Evaluation set was seeded by 1,000 top singaporian twitter users, not randomly. Prone to implicit bias
+% ** Only 6748 people in the evaluation set - seems very small
+
+\subsection{False indicators of influence}
 In \titlecite{Measuring User Influence in Twitter: The Million Follower Fallacy}{weng2010twitterrank}, 
 some additional nifty jazz occurs.
 % ROUGH NOTES
@@ -63,9 +83,6 @@ some additional nifty jazz occurs.
 % * Findings: retweets usually prominent among content aggregation services (content value), mentions among celebrities (name value)
 % * Second study: does influence change across topic genres? (ie is a person who posts only about one theme more or less influential than a person who posts about everything?) According to them, generalists tend to have more influence, but it would be nice to use our LDA topic stuff to segment users and try performing influence calculations in those separate contexts.
 
-\subsection{False indicators of influence}
-In \titlecite{Twitterrank: finding topic-sensitive influential twitterers}{weng2010twitterrank}, 
-some nifty jazz occurs.
 
 
 We'll probably cite \titlecite{Topic-sensitive pagerank}{haveliwala2002topic} too. And what kind of a crazy
