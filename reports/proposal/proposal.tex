@@ -63,30 +63,6 @@ a directly observable quantity. That said, we believe that the approach of the p
 for us: attempting to come up with a model of karma and then quanitfying our success
 by our ability to predict it.
 
-\subsection{Twitterrank}
-In \titlecite{Twitterrank: finding topic-sensitive influential twitterers}{weng2010twitterrank}, 
-some nifty jazz occurs.
-% ROUGH NOTES
-% * Paper comes up with a new ranking algorithm it claims corresponds to influence on twitter
-% * Claims PageRank ignores the /interest/ of twitter
-% * Aggregates tweets of a user into a single document and performs LDA on the resultant docs
-% * Idea: followers are likely to have similar probability distributions over topics (
-%   as measured by KL-divergence)
-% ** Validates this hypothesis on their dataset emphatically
-% * Invents a modified version of topic sensitive page rank that has transition probabilities
-%   to all nodes affected by their topic similarity.
-% * Evaluation: remove follower/target relationship, run algorithm, see if they can predict the relationship
-% ** Algorithm performs very well in this task
-% * They quantify general influence as a weighted sum over topic-specific influences
-% * Take aways:
-% ** It seems plausible that karma is influenced by the primary subject area of the poster
-% ** We might require multiple models for karma depending on topic
-% ** We should validate the hypothesis that repliers and posters tend to have similar topic distributions
-%rguujkngddfrkcldkvjejfkvtcltkvt ** It is possible that karma is related to PageRank, and refined with topic sensitive PageRank
-% * Paper issues:
-% ** Evaluation set was seeded by 1,000 top singaporian twitter users, not randomly. Prone to implicit bias
-% ** Only 6748 people in the evaluation set - seems very small
-
 \subsection{False indicators of influence}
 In \titlecite{Measuring User Influence in Twitter: The Million Follower Fallacy}{cha2010measuring}, 
 some additional nifty jazz occurs.
@@ -101,12 +77,34 @@ some additional nifty jazz occurs.
 % * Findings: retweets usually prominent among content aggregation services (content value), mentions among celebrities (name value)
 % * Second study: does influence change across topic genres? (ie is a person who posts only about one theme more or less influential than a person who posts about everything?) According to them, generalists tend to have more influence, but it would be nice to use our LDA topic stuff to segment users and try performing influence calculations in those separate contexts.
 
+We'll probably cite \titlecite{Topic-sensitive pagerank}{haveliwala2002topic} too. 
 
+\subsection{Brainstorming and Future Directions}
 
-We'll probably cite \titlecite{Topic-sensitive pagerank}{haveliwala2002topic} too. And what kind of a crazy
-paper doesn't cite 
 
 \section{Project Proposal}
+Our proposal for the term is to create a mathematical model of user karma that is
+validated by its ability to predict karma values for individual users. We want to answer the 
+question: is karma simply the sum of positive votes for a given user, or is it also 
+predicted by wider properties of the social graph? Furthermore, is our model of karma
+specific to a single website or does it apply more broadly across different datasets?
+Finally, on sites that lack an explicit model of karma (e.g. Wikipedia), does our model
+identify high-scoring nodes that match our intuition?
+
+Accordingly, we will be using multiple data sources in our project. As part of a past project
+in Natural Language Understanding (CS224U), we crawled a large dataset of conversation
+trees on the popular ``Hacker News'' (\url{https://news.ycombinator.com/}) website. On the site,
+users submit stories (URLs) which are up-voted by other users. Each story is accompanied
+by comments, in the form of a threaded conversation tree, which are also up-voted 
+and down-voted by different users. Each user on the site has a visible karma score, 
+which is the sum of all upvotes and downvotes that their comments and stories have received.
+We anticipate building a comment \textit{graph} of users where directed edges represent
+the source replying to the target in a conversation.
+
+% Another dataset goes here
+
+
+
 \bibliography{proposal}{} \bibliographystyle{acl2012}
 
 \end{document}
