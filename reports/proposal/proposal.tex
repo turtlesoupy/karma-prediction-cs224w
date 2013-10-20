@@ -36,21 +36,32 @@ could be used to inform our analysis of user karma.
 
 \subsection{Quantifying Influence on Twitter}
 In \titlecite{Everyone's an influencer: quantifying influence on twitter}{bakshy2011everyone}, 
-some stuff happens.
+the authors define \textit{influence} as the ability to generate cascades containing
+URLs on twitter. Technically, they begin by examining the first tweet (seed) containing the URL and
+then measure how the URL propagates through the follower graph of the seed user. To measure their
+success, they train a model that attempts to predict cascades based on attributes of the user
+(e.g., number of followers or the number of tweets) and their past ability to generate cascades.
+Unsurprisingly, the past ability to predict cascades was the best predictor of future performance.
 
-% ROUGH NOTES
-% * Paper observes cascade / diffusion events to quantify "influencers"
-% * Defines influencers as those who disproportionally impact the spread of information
-% ** We could investigate whether this corresponds to karma, if our network has cascades
-% * Methodology: observe the origin of URLs, then track them as they are tweeted by followers
-% * Trains model for cascades based on followers, tweets,  friends, past influence. Past influence most predictive
-% ** Finds local features (direct followers) are more important than global. Could try to see if karma is influenced
-%    by people close by
-% * Also tries to find out the role of /content/ in cascades by using mech turk to classify the URLs
-% ** Did not get good results, but maybe we can try a few experiments to see if karma distribution changes for topics (e.g. by LDA)
-% * Paper issues:
-% ** Naturally biased, since it _defines_ influence as this. Karma is directly observable so we
-%    can see what actually corresponds to karma
+A big take-away from this paper is that local-features, those from a user's immediate followers,
+are better indications of influence than global ones (wider properties of the graph). The authors
+also attempt to see if cascades are affected by the \textit{content} of the tweets by categorizing the 
+tweeted URLs using mechanical turk. They admit that this categorization did not help in their
+prediction task. In our work,
+it seems worth investigating whether \textit{karma} of repliers is a big indicator of the karma
+of the person posting and whether their are ``karma cliques'' in the graph. 
+
+We take issue with two parts of the paper: first, the authors directly define \textit{influence} 
+as the ability to generate cascades. Influence is a nuanced concept, and it seems that cascades
+may only be a small factor in it. We also think that the authors' analysis of content in cascades
+is naive - depending on humans to evaluate content made their dataset small. Our investigation
+could include a larger scale analysis of content in the form of a topic modelling algorithn
+such as \titlecite{Latent dirichlet allocation}{blei2003latent} (LDA).
+
+The authors' task differs from our task because unlike karma, influence is not necessarily
+a directly observable quantity. That said, we believe that the approach of the paper provides a direction
+for us: attempting to come up with a model of karma and then quanitfying our success
+by our ability to predict it.
 
 \subsection{Twitterrank}
 In \titlecite{Twitterrank: finding topic-sensitive influential twitterers}{weng2010twitterrank}, 
@@ -71,7 +82,7 @@ some nifty jazz occurs.
 % ** It seems plausible that karma is influenced by the primary subject area of the poster
 % ** We might require multiple models for karma depending on topic
 % ** We should validate the hypothesis that repliers and posters tend to have similar topic distributions
-% ** It is possible that karma is related to PageRank, and refined with topic sensitive PageRank
+%rguujkngddfrkcldkvjejfkvtcltkvt ** It is possible that karma is related to PageRank, and refined with topic sensitive PageRank
 % * Paper issues:
 % ** Evaluation set was seeded by 1,000 top singaporian twitter users, not randomly. Prone to implicit bias
 % ** Only 6748 people in the evaluation set - seems very small
@@ -93,7 +104,7 @@ some additional nifty jazz occurs.
 
 
 We'll probably cite \titlecite{Topic-sensitive pagerank}{haveliwala2002topic} too. And what kind of a crazy
-paper doesn't cite \titlecite{Latent dirichlet allocation}{blei2003latent}?
+paper doesn't cite 
 
 \section{Project Proposal}
 \bibliography{proposal}{} \bibliographystyle{acl2012}
