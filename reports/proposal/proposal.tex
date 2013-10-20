@@ -77,12 +77,12 @@ some additional nifty jazz occurs.
 % * Findings: retweets usually prominent among content aggregation services (content value), mentions among celebrities (name value)
 % * Second study: does influence change across topic genres? (ie is a person who posts only about one theme more or less influential than a person who posts about everything?) According to them, generalists tend to have more influence, but it would be nice to use our LDA topic stuff to segment users and try performing influence calculations in those separate contexts.
 
-We'll probably cite \titlecite{Topic-sensitive pagerank}{haveliwala2002topic} too. 
 
 \subsection{Brainstorming and Future Directions}
 
 
 \section{Project Proposal}
+% What is the problem we are solving
 Our proposal for the term is to create a mathematical model of user karma that is
 validated by its ability to predict karma values for individual users. We want to answer the 
 question: is karma simply the sum of positive votes for a given user, or is it also 
@@ -91,6 +91,7 @@ specific to a single website or does it apply more broadly across different data
 Finally, on sites that lack an explicit model of karma (e.g. Wikipedia), does our model
 identify high-scoring nodes that match our intuition?
 
+% What data sources are we using and how will we collect it
 Accordingly, we will be using multiple data sources in our project. As part of a past project
 in Natural Language Understanding (CS224U), we crawled a large dataset of conversation
 trees on the popular ``Hacker News'' (\url{https://news.ycombinator.com/}) website. On the site,
@@ -104,6 +105,36 @@ the source replying to the target in a conversation.
 % Another dataset goes here
 
 
+% What work do you plan to do the project?
+We anticipate multiple stages of development in our project beginning with a \textit{descriptive}
+component. The obvious first step is to take karma and visualize it: does it follow a power law? 
+Is the power law different depending on the data source we analyze? Having determined what karma
+itself is, we can start to see how it correlated to wider properties of the graph. For example,
+we could look at how the clustering coefficient varies with karma of the user.
+
+After making sense of the data we are dealing with, we anticipate moving towards our
+\textit{predictive} component. Guided by our earlier findings we will try to create a model
+that is able to perform blind-prediction on karma. It seems plausible that some of our 
+early metrics could play the role of \textit{features} in this system.
+
+% Which algorithms/techniques/models you plan to use/develop? Be as specific as you can!
+The final model we produce will likely be a regression model fit on top of features that
+we identify in the descriptive phase of our project. Ideally, we would be able to take
+the model we create for our \textit{Hacker News} dataset and achieve similar results on
+our \textit{*******} dataset with a small tweak in our parameters. If a regression model
+proves to be impossible due to the wide variance in karma scores, we could also evaluate
+our success on a classification task that attempts to divide users into high-karma (important
+contributors) and low-karma users (unimportant contributors) by picking a fixed threshold of
+karma scores.
+
+We are particularly interested in exploring the role of \textit{content}
+
+% Who will you evaluate your method? How will you test it? How will you measure success?
+
+% What do you expect to submit/accomplish by the end of the quarter?
+
+
+We'll probably cite \titlecite{Topic-sensitive pagerank}{haveliwala2002topic} too. 
 
 \bibliography{proposal}{} \bibliographystyle{acl2012}
 
