@@ -1,14 +1,8 @@
 # cs224w-karma-prediction
 
-A Clojure library designed to ... well, that part is up to you.
+Investigation into karma prediction on social networks.
 
-## Usage
-
-FIXME
-
-## License
-
-Copyright © 2013 FIXME
+Copyright © 2013 Thomas Dimson / Milind Ganjoo
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
