@@ -10,3 +10,7 @@ pom.xml.asc
 /reports/**/*.pdf
 /reports/**/*.aux
 /reports/**/*.log
+/reports/**/*.bbl
+/reports/**/*.blg
+/reports/**/*.fdb_latexmk
+/reports/**/*.synctex.gz
