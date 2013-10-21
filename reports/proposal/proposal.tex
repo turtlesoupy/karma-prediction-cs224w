@@ -303,11 +303,11 @@ On the surface, PageRank feels like a natural fit for our task because it
 generally corresponds to the \textit{authority} or \textit{influence} of nodes
 in our graph. A component of our analysis will be to plot karma against PageRank
 scores to see how predictive we can be.  Going deeper, we could combine our
-LDA-topic analysis with PageRank by performing \citep{haveliwala2002topic} on 
-our nodes and seeing if graph authority is
-more predictive of karma within certain topics. This hypothesis was validated in
-predicting following relationships on the twitter graph in
-\citep{weng2010twitterrank}
+LDA-topic analysis with PageRank by performing Topic-Sensitive PageRank
+\citep{haveliwala2002topic} on our nodes and seeing if graph authority is more
+predictive of karma within certain topics. This hypothesis was validated in
+predicting following relationships on the Twitter graph in
+\citet{weng2010twitterrank}
 
 \subsection{Evaluation}
 % Who will you evaluate your method? How will you test it? How will you measure
