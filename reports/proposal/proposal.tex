@@ -26,24 +26,24 @@
 
 \section{Introduction}
 Many online communities explicitly publicize the concept of \textit{karma} or
-\textit{reputation} for users. The number generally represents a sum of votes 
+\textit{reputation} for users, computed as a sum of votes 
 by other members of the community. In other communities, there is an implicit concept
-of \textit{influence}, loosely defined as the ability of a person to affect 
-others. These quantities seem related, but the mapping has never been made clear. In our work,
+of \textit{influence}, loosely defined as the ability of a member to affect 
+others. These quantities seem related, but the mapping between the two is not 
+immediately obvious. In our work,
 we will investigate whether \textit{karma} can be inferred from graph properties without
 looking at votes themselves.
 
 \section{Reaction Paper}
-There is a wealth of existing literature on identifying and quantifying ``influencers''
-on social networks such as Twitter. Although it remains to be seen whether \textit{karma} and
-\textit{influence} are related, we believe that many of the techniques used in these papers
+There is a wealth of existing literature on identifying and quantifying \textit{influencers}
+on social networks such as Twitter. We believe that many of the techniques used in such papers
 could be used to inform our analysis of user karma.
 
 \subsection{Quantifying Influence on Twitter}
 In \titlecite{Everyone's an influencer: quantifying influence on twitter}{bakshy2011everyone}, 
 the authors define \textit{influence} as the ability to generate cascades containing
 URLs on twitter. Technically, they begin by examining the first tweet (seed) containing the URL and
-then measure how the URL propagates through the follower graph of the seed user. To measure their
+then measure how the URL propagates through the seed user's follower tree. To measure their
 success, they train a model that attempts to predict cascades based on attributes of the user
 (e.g., number of followers or the number of tweets) and their past ability to generate cascades.
 Unsurprisingly, the past ability to predict cascades was the best predictor of future performance.
@@ -59,7 +59,8 @@ of the person posting and whether their are ``karma cliques'' in the graph.
 We take issue with two parts of the paper: first, the authors directly define \textit{influence} 
 as the ability to generate cascades. Influence is a nuanced concept, and it seems that cascades
 may only be a small factor in it. We also think that the authors' analysis of content in cascades
-is naive - depending on humans to evaluate content made their dataset small. Our investigation
+is naive - depending on humans to evaluate content made their dataset subjective and limited. 
+Our investigation
 could include a larger scale analysis of content in the form of a topic modelling algorithn
 such as \titlecite{Latent dirichlet allocation}{blei2003latent} (LDA).
 
@@ -69,15 +70,14 @@ for us: attempting to come up with a model of karma and then quanitfying our suc
 by our ability to predict it.
 
 \subsection{Analyzing Reputation Systems on Question Answering Websites} In the
-very recent paper \titlecite{}, the authors consider the reputation scheme on
-StackOverflow which is based on upvotes and accepted answers. They analyze 9
+very recent paper \titlecite{Analysis of the Reputation System and User Contributions on a Question Answering Website: StackOverflow}{movshovitzanalysis}, the authors consider the reputation scheme on
+StackOverflow (based on upvotes and accepted answers). They analyze 9
 million questions and answers posted by 1.2 million users since the site's
-inception, and attempt to identify expert users based on their contribution
+inception and attempt to identify expert users based on their contribution
 patterns.
 
-One of the interesting directions pursued by the paper is their PageRank analysis on
-three different interaction graphs: replies and comments between a user who
-asked a question and users who answered (stratified into three different graphs
+One striking direction pursued by the paper is their PageRank analysis on
+interaction graphs implied by the questioner and answerer (stratified into three different graphs
 based on whether the answer was upvoted, accepted, or neither). They attempted
 to find important nodes (users) through this approach. However, they observed
 that reputation scores are not as correlated with PageRank values as they had
@@ -85,12 +85,12 @@ originally thought -- many users with high reputation had considerably lower
 PageRank.
 
 While the paper noted these discrepancies, they did not attempt to explain them
--- this is an area we would like to look into. Specifically, we would like to do
-topic-sensitive PageRank and LDA analysis (described in our proposal) to see if
-stronger correlation is observed in the context of specific topics on a
-topic-heavy website like StackOverflow. Additionally, we would like to do other
-forms of stratification, such as setting thresholds on interaction length (to
-calculate PageRank in the context of long, potentially insightful interactions).
+-- this is an area we would like to look into. Specifically, we would like to perform
+topic-sensitive PageRank and LDA analysis (described in Section \ref{sec:models}) 
+to see if stronger correlation occurs in the context of specific topics. 
+Additionally, we would like to perform other
+forms of stratification, such as setting thresholds on interaction length, to
+calculate PageRank in the context of long and potentially insightful interactions.
 
 In addition to PageRank, the paper attempts to find anomalous users by running
 SVD on the interaction graphs, which yielded a few anomalous questioner and
@@ -194,6 +194,7 @@ that is able to perform blind-prediction on karma. It seems plausible that some 
 early metrics could play the role of \textit{features} in this system.
 
 \subsection{Models and Algorithms}
+\label{sec:models}
 % Which algorithms/techniques/models you plan to use/develop? Be as specific as you can!
 The final model we produce will likely be a regression model fit on top of
 features that we identify in the descriptive phase of our project. Ideally, we
