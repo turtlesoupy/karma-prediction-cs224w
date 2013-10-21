@@ -77,13 +77,12 @@ some additional nifty jazz occurs.
 % * Findings: retweets usually prominent among content aggregation services (content value), mentions among celebrities (name value)
 % * Second study: does influence change across topic genres? (ie is a person who posts only about one theme more or less influential than a person who posts about everything?) According to them, generalists tend to have more influence, but it would be nice to use our LDA topic stuff to segment users and try performing influence calculations in those separate contexts.
 
-
 \subsection{Brainstorming and Future Directions}
 
 \section{Project Proposal}
 \subsection{Problem Definition}
 % What is the problem we are solving
-Our proposal for the term is to create a mathematical model of user karma that is
+Our term will be spent creating a mathematical model of user karma that is
 validated by its ability to predict karma values for individual users. We want to answer the 
 question: is karma simply the sum of positive votes for a given user, or is it also 
 predicted by wider properties of the social graph? Furthermore, is our model of karma
@@ -93,7 +92,7 @@ identify high-scoring nodes that match our intuition?
 
 \subsection{Data Sources}
 % What data sources are we using and how will we collect it
-Accordingly, we will be using multiple data sources in our project. As part of a past project
+We will be using multiple data sources in our project. As part of a past project
 in Natural Language Understanding (CS224U), we crawled a large dataset of conversation
 trees on the popular ``Hacker News'' (\url{https://news.ycombinator.com/}) website. On the site,
 users submit stories (URLs) which are up-voted by other users. Each story is accompanied
@@ -103,11 +102,19 @@ which is the sum of all upvotes and downvotes that their comments and stories ha
 We anticipate building a comment \textit{graph} of users where directed edges represent
 the source replying to the target in a conversation.
 
-% Another dataset goes here
+As a secondary datasource, we would also like to analyze StackOverflow
+(\url{http://stackoverflow.com/}). Here, a poster created a programming-related
+question and solicits answers from the community. When satisfied, the poster
+marks their question as ``solved''. Other members of the community can up-vote
+or down-vote both questions and answers. Each user on the site has a
+``reputation'', which is a weighted combination of up-votes, down-votes and
+other factors such as question creation and closed answers. Fortunately,
+StackOverflow makes all their data available online through their StackExchange
+data explorer (\url{http://data.stackexchange.com/}) and we will not have to
+perform any crawling to get access.
 
-
-% What work do you plan to do the project?
 \subsection{Anticipated Work}
+% What work do you plan to do the project?
 Development of our project will begin with a \textit{descriptive}
 component. The obvious first step is to take karma and visualize it: does it follow a power law? 
 Is the power law different depending on the data source we analyze? Having determined what karma
@@ -133,7 +140,7 @@ scores.
 
 We are particularly interested in exploring the role of \textit{content} in
 karma. Specifically, we want to know if there are different karma distributions
-for users depending on the topics that they normally discuss. We could way to
+for users depending on the topics that they normally discuss. We could 
 investigate this by computing topic-distributions for users through Latent
 Dirichlet Allocation (LDA). We could then look at probability-weighted karma
 distributions in each topic, and see if there is a wide variance between topics.
