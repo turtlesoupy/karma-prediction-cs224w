@@ -145,6 +145,31 @@ additional nifty jazz occurs.
 % those separate contexts.
 
 \subsection{Brainstorming and Future Directions}
+Two of our papers address the concept of influence in the Twitter graph, where it is
+not directly observable. We are intrigued by their definition of influence as the ability
+to create cascades of networks, but think that it might be better validated on a graph
+that has an explicit notion of \textit{influence}.
+
+% MILIND - this is kind of hacked together. Can you take a pass?
+
+Our second paper has a much more quantitative analysis of reputation on StackOverflow.
+Although they don't address cascades directly, we are intrigued by the structured approach
+they take to their analysis and think it could apply nicely to our own techniques.
+StackOverflow has a particularly complicated notion of reputation, which is not simply
+a linear combination of up-votes to pieces of content. Analyzing a similar quantity
+on more direct graphs (e.g., karma on Slashdot) might make for a more successful
+model.
+
+Furthermore, the paper has a concrete evaluation metric: the ability to predict 
+``influentials'' (high karma individuals). We could try to pursue a similar direction,
+but it makes more sense to us as a regression problem (predicting karma) than a classification
+(predicting large karma).
+
+All the literature we read contained a large descriptive section. This provided a very
+natural progression between ideas and models. In our paper, we could start by first
+looking at factors correlated with karma and then use this analysis as a base
+for our model. Additionally we could also look at social interactions to see, for example,
+if high karma users always reply to other high karma users.
 
 \section{Project Proposal}
 \subsection{Problem Definition}
