@@ -63,19 +63,81 @@ a directly observable quantity. That said, we believe that the approach of the p
 for us: attempting to come up with a model of karma and then quanitfying our success
 by our ability to predict it.
 
-\subsection{False indicators of influence}
-In \titlecite{Measuring User Influence in Twitter: The Million Follower Fallacy}{cha2010measuring}, 
-some additional nifty jazz occurs.
-% ROUGH NOTES
-% * Paper compares three measures of influence: indegree, retweets and mentios.
-% * Observes how popular news topics spread by the three typeso f influential users.
-% * Questions the traditional view that only a few select people have an instrinsic quality that makes them influential. i.e anyone can "make it" with the right amount of focus or the right set of circumstances.
-% * Take away 1: the three measures mean different things, e.g followers/indegree indicates "popularity", retweets represents content value, and mentions indicate name value. Our objective is similar -- we intend to study what aspect of influence karma score actually measures.
-% Note 1: can we sift out users with high karma values but who are just popular because they've been around long, and not necessarily because they're useful? How do you measure "value" of their contributions? Can we study the nature of their relationships with others? (e.g. are they perceived positively by other high-ranked members? or is there a lot of antagonism/arrogance?)
-% * Note 2: can we measure evolution of karma with time? Don't want "15 seconds of fame" people who've since then retained their influence, because karma scores are usually static.
-% * Methodology: rank correlation coefficient (need to discuss this in a little detail) to compare different measures of influcence
-% * Findings: retweets usually prominent among content aggregation services (content value), mentions among celebrities (name value)
-% * Second study: does influence change across topic genres? (ie is a person who posts only about one theme more or less influential than a person who posts about everything?) According to them, generalists tend to have more influence, but it would be nice to use our LDA topic stuff to segment users and try performing influence calculations in those separate contexts.
+\subsection{Analyzing Reputation Systems on Question Answering Websites} In the
+very recent paper \titlecite{}, the authors consider the reputation scheme on
+StackOverflow which is based on upvotes and accepted answers. They analyze 9
+million questions and answers posted by 1.2 million users since the site's
+inception, and attempt to identify expert users based on their contribution
+patterns.
+
+One of the interesting directions pursued by the paper is their PageRank analysis on
+three different interaction graphs: replies and comments between a user who
+asked a question and users who answered (stratified into three different graphs
+based on whether the answer was upvoted, accepted, or neither). They attempted
+to find important nodes (users) through this approach. However, they observed
+that reputation scores are not as correlated with PageRank values as they had
+originally thought -- many users with high reputation had considerably lower
+PageRank.
+
+While the paper noted these discrepancies, they did not attempt to explain them
+-- this is an area we would like to look into. Specifically, we would like to do
+topic-sensitive PageRank and LDA analysis (described in our proposal) to see if
+stronger correlation is observed in the context of specific topics on a
+topic-heavy website like StackOverflow. Additionally, we would like to do other
+forms of stratification, such as setting thresholds on interaction length (to
+calculate PageRank in the context of long, potentially insightful interactions).
+
+In addition to PageRank, the paper attempts to find anomalous users by running
+SVD on the interaction graphs, which yielded a few anomalous questioner and
+answerer users, who gained extremely large reputations and had highly focussed
+ego networks, mainly through only one type of contribution (i.e. either a
+question or an answer). This gives us insight into the various non-intersecting
+ways reputation can be built, and informs ways we can filter out anomalies.
+
+Finally, this paper builds a classification model to predict ``expert users'',
+defined by them as users with reputation scores of more than 2400. They build a
+binary classification model based on simple user features like number of answers,
+questions, accepted answers, upvoted answers and comments, and question-answer
+ratios, and run random forest classification on that model. They obtain an Area
+under the Curve of 81\%, which they claim is higher than previous attempts.
+
+The PageRank-based methodology to identify user influence in this paper is so
+far the closest to our proposed approach. However, instead of simply identifying
+expert users through a classification task, we hope to build a generalizable
+model to predict karma scores specific to different websites based on
+per-website observations.  In addition, we plan to use some of their intuitive
+conclusions -- such as the higher reputation earned by early users and frequent
+contributors -- in forming an ambitious baseline for our evaluations.
+
+\subsection{False indicators of influence} In \titlecite{Measuring User
+Influence in Twitter: The Million Follower Fallacy}{cha2010measuring}, some
+additional nifty jazz occurs.
+
+% ROUGH NOTES * Paper compares three measures of influence: indegree, retweets
+% and mentios.  * Observes how popular news topics spread by the three typeso f
+% influential users.  * Questions the traditional view that only a few select
+% people have an instrinsic quality that makes them influential. i.e anyone can
+% "make it" with the right amount of focus or the right set of circumstances.  *
+% Take away 1: the three measures mean different things, e.g followers/indegree
+% indicates "popularity", retweets represents content value, and mentions
+% indicate name value. Our objective is similar -- we intend to study what
+% aspect of influence karma score actually measures.  Note 1: can we sift out
+% users with high karma values but who are just popular because they've been
+% around long, and not necessarily because they're useful? How do you measure
+% "value" of their contributions? Can we study the nature of their relationships
+% with others? (e.g. are they perceived positively by other high-ranked members?
+% or is there a lot of antagonism/arrogance?) * Note 2: can we measure evolution
+% of karma with time? Don't want "15 seconds of fame" people who've since then
+% retained their influence, because karma scores are usually static.  *
+% Methodology: rank correlation coefficient (need to discuss this in a little
+% detail) to compare different measures of influcence * Findings: retweets
+% usually prominent among content aggregation services (content value), mentions
+% among celebrities (name value) * Second study: does influence change across
+% topic genres? (ie is a person who posts only about one theme more or less
+% influential than a person who posts about everything?) According to them,
+% generalists tend to have more influence, but it would be nice to use our LDA
+% topic stuff to segment users and try performing influence calculations in
+% those separate contexts.
 
 \subsection{Brainstorming and Future Directions}
 
