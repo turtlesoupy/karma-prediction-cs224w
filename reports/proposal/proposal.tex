@@ -22,7 +22,6 @@
 \maketitle
 
 \section{Introduction}
-
 Many online communities explicitly publicize the concept of \textit{karma} or
 \textit{reputation} for users, computed as a sum of votes by other members of
 the community. In general, these explicit measures are seen as proxies for more
@@ -50,8 +49,7 @@ so-called \textit{influentials} on social networks such as Twitter. We believe
 that many of the techniques used in such papers could be used in our analysis of
 user karma.
 
-\subsection{Everyone's an influencer: quantifying influence on Twitter
-  \citep{bakshy2011everyone}}
+\subsection{Everyone's an influencer: quantifying influence on Twitter \citep{bakshy2011everyone}}
 
 \citet{bakshy2011everyone} define \textit{influence} as the ability to generate
 cascades containing URLs on Twitter. Technically, they begin by examining the
@@ -288,7 +286,7 @@ plausible that some of our early metrics could play the role of
 The final model we produce will likely be a regression model fit on top of
 features that we identify in the descriptive phase of our project. Ideally, we
 would be able to take the model we create for our \textit{Hacker News} dataset
-and achieve similar results on our \textit{*******} dataset with a small tweak
+and achieve similar results on our \textit{StackOverflow} dataset with a small tweak
 in our parameters. If a regression model proves to be impossible due to the wide
 variance in karma scores, we could also evaluate our success on a classification
 task that attempts to divide users into high-karma (important contributors) and
@@ -310,12 +308,11 @@ On the surface, PageRank feels like a natural fit for our task because it
 generally corresponds to the \textit{authority} or \textit{influence} of nodes
 in our graph. A component of our analysis will be to plot karma against PageRank
 scores to see how predictive we can be.  Going deeper, we could combine our
-LDA-topic analysis with PageRank by performing \titlecite{Topic-sensitive
-pagerank}{haveliwala2002topic} on our nodes and seeing if graph authority is
+LDA-topic analysis with PageRank by performing \citep{haveliwala2002topic} on 
+our nodes and seeing if graph authority is
 more predictive of karma within certain topics. This hypothesis was validated in
 predicting following relationships on the twitter graph in
-\titlecite{Twitterrank: finding topic-sensitive influential
-twitterers}{weng2010twitterrank}
+\citep{weng2010twitterrank}
 
 \subsection{Evaluation}
 % Who will you evaluate your method? How will you test it? How will you measure
