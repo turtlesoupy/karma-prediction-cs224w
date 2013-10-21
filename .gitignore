@@ -11,6 +11,8 @@ pom.xml.asc
 /reports/**/*.aux
 /reports/**/*.log
 /reports/**/*.bbl
+/reports/**/*.fls
+/reports/**/*.dvi
 /reports/**/*.blg
 /reports/**/*.fdb_latexmk
 /reports/**/*.synctex.gz
