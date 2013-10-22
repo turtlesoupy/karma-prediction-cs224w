@@ -5,7 +5,7 @@
 \usepackage{multirow}
 \usepackage{url}
 \usepackage[numbers]{natbib}
-\newgeometry{margin=2.80cm}
+\newgeometry{margin=3.50cm}
 
 \title{
   {\large CS224W Reaction Paper \& Project Proposal} \\
@@ -22,17 +22,17 @@
 \maketitle
 
 \section{Introduction}
-Many online communities explicitly publicize the concept
-of \textit{karma} or \textit{reputation} for users, computed as a sum of votes
-by other members of the community. In general, these explicit measures are seen
-as proxies for more intangible notions such as \textit{influence} (the ability
-of a member to persuade others) and \textit{credibility} (the trustworthiness
-of the user as an upstanding member of the community). Specifically, one can 
-imagine a range of network
-characteristics, interactions, and temporal factors that affect the
+
+Many online communities explicitly publicize the concept of \textit{karma} or
+\textit{reputation} for users, computed as a sum of votes by other members of
+the community. In general, these explicit measures are seen as proxies for more
+intangible notions such as \textit{influence} (the ability of a member to
+persuade others) and \textit{credibility} (the trustworthiness of the user as an
+upstanding member of the community). Specifically, one can imagine a range of
+network characteristics, interactions, and temporal factors that affect the
 accumulation of karma points. In our work, we will investigate whether such
-factors can be identified and analyzed, and as a result, whether
-karma values can be predicted.
+factors can be identified and analyzed, and as a result, whether karma values
+can be predicted.
 
 This topic is motivated by the discussions in class about how users evaluate
 each other in social graphs. We wish to determine whether karma be regarded
@@ -153,28 +153,44 @@ there isn't a notion of a \textit{gold set} from which cascades can be measured.
 We feel these papers could be greatly strengthened by linking this to a known
 quantity instead of an abstract concept.
 
-The role of content isn't particularly well-explored in any of the Twitter papers.
+The role of content isn't particularly well-explored in either of the Twitter papers.
 Specifically, we take issue with the \citet{bakshy2011everyone}: they analyze
-the role of content in cascades by hand-classifying the tweets by mechanical turk.
+the role of content in cascades by hand-classifying the tweets by Mechanical Turk.
 The details of this process are somewhat sparse in the paper and the human
 dependency makes their dataset limited in size and scope. We believe a better
-approach would be to cluster tweets/URLs by their words, for example by 
+approach would be to cluster tweets/URLs by their words, for example by
 a topic modelling algorithm such as Latent Dirichlet Allocation (LDA)
 \citep{blei2003latent}. Although the clusters would not be perfect, the assignments
 would give an objective category by which to compare the role of cascades.
 
-% Milind, I just copied and pasted your analysis from paper #2. Can you 
-% expand and let it make sense here?
-Converesely, \citet{movshovitzanalysis} analyze a different dataset 
-(StackOverflow reputation) in a very concrete, mathematical fashion.
-One of the shortcomings of this paper is that while it notes the discrepancies
-betwen reputation scores and PageRank, they did not attempt to explain them --
-this is an area we would like to look into. Specifically, we would like to
-perform topic-sensitive PageRank and LDA analysis (described in Section
-\ref{sec:models}) to see if stronger correlation occurs in the context of
-specific topics.  Additionally, we would like to perform other forms of
-stratification, such as setting thresholds on interaction length, to calculate
-PageRank in the context of long and potentially insightful interactions.
+A similar lack of content focus can be seen in \citet{cha2010measuring}. Their
+topic-specific analysis of tweets relied on specific keywords associated with
+three prominent events. We feel the use of automated topic modelling would help us get a more
+diverse dataset.
+
+Temporal analysis of influence is an area we would like to study in depth.
+Unfortunately, the analysis by \citet{cha2010measuring} was not comprehensive
+For example, they tracked the change in influence only for 100 top users, and
+their explanation for trends, by their own admission, mostly in retrospect for
+the users who became popular, and based on manual appraisal of tweet content.
+We plan to perform more rigorous graph-based analysis when looking at temporal
+trends. We are more optimistic about being able to do this, since the data we
+have collected has temporal information attached to each user-user interaction,
+and thus allows us to look at the history of the interaction graph.  (This is in
+contrast to Twitter, where information about when retweets and mentions occurred
+is not available.)
+
+\citet{movshovitzanalysis} analyze a different dataset (StackOverflow
+reputation) in a very concrete, mathematical fashion.  One of the shortcomings
+of this paper is that while it notes the discrepancies betwen reputation scores
+and PageRank (namely that the two don't often correlate positively for many
+users), they did not attempt to explain them -- this is an area we would like to
+look into. Specifically, we would like to perform topic-sensitive PageRank and
+LDA analysis (described in Section \ref{sec:models}) to see if stronger
+correlation occurs in the context of specific topics.  Additionally, we would
+like to perform other forms of stratification, such as setting thresholds on
+interaction length, to calculate PageRank in the context of long and potentially
+insightful interactions.
 
 The PageRank-based methodology to identify user influence in this paper is so
 far the closest to our proposed approach. However, instead of simply identifying
@@ -184,61 +200,47 @@ per-website observations.  In addition, we plan to use some of their intuitive
 conclusions -- such as the higher reputation earned by early users and frequent
 contributors -- in forming an ambitious baseline for our evaluations.
 
-%Milind please critique your final paper
-
 \subsection{Brainstorming and Future Directions}
-Two of our papers address the concept of influence in the Twitter graph, where it is
-not directly observable. We are intrigued by their definition of influence as the ability
-to create cascades of networks, but think that it might be better validated on a graph
-that has an explicit notion of \textit{influence}.
 
-% MILIND - this is kind of hacked together. Can you take a pass?
+Two of our papers address the concept of influence in the Twitter graph, where
+it is not directly observable. We are intrigued by their definition of influence
+as the ability to create cascades of networks, but think that it might be better
+validated on a graph that has an explicit notion of \textit{influence}.
 
-Our second paper has a much more quantitative analysis of reputation on StackOverflow.
-Although they don't address cascades directly, we are intrigued by the structured approach
-they take to their analysis and think it could apply nicely to our own techniques.
-StackOverflow has a particularly complicated notion of reputation, which is not simply
-a linear combination of up-votes to pieces of content. Analyzing a similar quantity
-on more direct graphs (e.g., karma on Slashdot) might make for a more successful
-model.
+Our second paper has a much more quantitative analysis of reputation on
+StackOverflow.  Although they don't address cascades directly, we are intrigued
+by the structured approach they take to their analysis and think it could apply
+nicely to our own techniques.  StackOverflow has a particularly complicated
+notion of reputation, which is not simply a linear combination of up-votes to
+pieces of content. Analyzing a similar quantity on more direct graphs (e.g.,
+karma on Slashdot) might make for a more successful model.
 
-Furthermore, the paper has a concrete evaluation metric: the ability to predict 
-``influentials'' (high karma individuals). We could try to pursue a similar direction,
-but it makes more sense to us as a regression problem (predicting karma) than a classification
-(predicting large karma).
+Furthermore, the paper has a concrete evaluation metric: the ability to predict
+``influentials'' (high karma individuals). We could try to pursue a similar
+direction, but it makes more sense to us as a regression problem (predicting
+karma) than a classification (predicting large karma).
 
-All the literature we read contained a large descriptive section. This provided a very
-natural progression between ideas and models. In our paper, we could start by first
-looking at factors correlated with karma and then use this analysis as a base
-for our model. Additionally we could also look at social interactions to see, for example,
-if high karma users always reply to other high karma users.
+All the literature we read contained a large descriptive section. This provided
+a very natural progression between ideas and models. In our paper, we could
+start by first looking at factors correlated with karma and then use this
+analysis as a base for our model. Additionally we could also look at social
+interactions to see, for example, if high karma users always reply to other high
+karma users.
 
-%%%%%%%%%%%%%%%%%%
-% Note: I will take a stab at this tomorrow. I have a few general brainstorming
-% ideas from the above analysis.
+The temporal analysis in \citet{cha2010measuring}, while rudimentary, does
+underscore the changing nature of influence. On the other hand, karma scores on
+most websites are static, and often may not present the latest and most
+realistic picture of the influence and credibility of the user. This means that
+when analyzing karma values, we would need to sift out users with high values
+who gained points over short and irregular bursts of activity, and compare them
+against users who have been long-standing members of the community, and look for
+explanatory trends and differences.
 
-% Our objective is similar -- we intend to study what
-% Note 1: can we sift out
-% users with high karma values but who are just popular because they've been
-% around long, and not necessarily because they're useful?
-
-% How do you measure
-% "value" of their contributions? Can we study the nature of their relationships
-% with others? (e.g. are they perceived positively by other high-ranked members?
-% or is there a lot of antagonism/arrogance?)
-
-% * Note 2: can we measure evolution
-% of karma with time? Don't want "15 seconds of fame" people who've since then
-% retained their influence, because karma scores are usually static.  *
-
-%- indegree only final snapshot, couldn't use graph analysis, instead probabilty
-%that a random tweet is a retweet or mention of a given user. we won't have that
-%problem
-%- most conclusion-rich paper, however many were based on empirical intuitions
-%and were in retrospect (e.g. they admit that findings about temporal trends in
-%influence is based only on the set of users who became popular, and manual
-%inspection of their twee trends). We hope to perform a more rigorous graph-based
-%analysis to see if our conclusions can be generalized across online communities.
+Finally, we would like to focus some of our analysis exclusively on the set of
+high karma users, and perform our PageRank analysis in that context. Our hope is
+that some intangible aspects of karma come to light, such as the nature, tone
+and quality of interaction among top users. We could also test the veracity of
+the anecdotal ``power struggle'' between top members of online communities!
 
 \section{Project Proposal} \subsection{Problem Definition}
 % What is the problem we are solving
