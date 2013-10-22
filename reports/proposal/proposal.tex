@@ -42,12 +42,13 @@ on other graphs (including those without \textit{users} as nodes).
 
 \section{Literature review}
 
+\subsection{Summary}
 There is a wealth of existing literature on identifying and quantifying
 so-called \textit{influentials} on social networks such as Twitter. We believe
 that many of the techniques used in such papers could be used in our analysis of
 user karma.
 
-\subsection{Everyone's an influencer: quantifying influence on Twitter \citep{bakshy2011everyone}}
+\subsubsection{Everyone's an influencer: quantifying influence on Twitter \citep{bakshy2011everyone}}
 
 \citet{bakshy2011everyone} define \textit{influence} as the ability to generate
 cascades containing URLs on Twitter. Technically, they begin by examining the
@@ -67,21 +68,7 @@ in their prediction task. In our work, it seems worth investigating whether
 \textit{karma} of repliers is a big indicator of the karma of the person posting
 and whether there are ``karma cliques'' in the graph.
 
-We take issue with two parts of the paper: first, the authors directly define
-\textit{influence} as the ability to generate cascades. Influence is a nuanced
-concept, and it seems that cascades may only be a small factor in it. We also
-think that the authors' analysis of content in cascades is naive -- depending on
-humans to evaluate content made their dataset subjective and limited.  Our
-investigation could include a larger scale analysis of content in the form of a
-topic modelling algorithn such as Latent Dirichlet Allocation (LDA)
-\citep{blei2003latent}.
-
-The authors' task differs from our task because unlike karma, influence is not
-necessarily a directly observable quantity. That said, we believe that the
-approach of the paper provides a direction for us: attempting to come up with a
-model of karma and then quanitfying our success by our ability to predict it.
-
-\subsection{Analysis of the Reputation System and User Contributions on a
+\subsubsection{Analysis of the Reputation System and User Contributions on a
   Question Answering Website: StackOverflow
   \citep{movshovitzanalysis}}
 
@@ -113,24 +100,8 @@ questions, accepted answers, upvoted answers and comments, and question-answer
 ratios, and run random forest classification on that model. They obtain an Area
 under the Curve of 81\%, which they claim is higher than previous attempts.
 
-One of the shortcomings of this paper is that while it notes the discrepancies
-betwen reputation scores and PageRank, they did not attempt to explain them --
-this is an area we would like to look into. Specifically, we would like to
-perform topic-sensitive PageRank and LDA analysis (described in Section
-\ref{sec:models}) to see if stronger correlation occurs in the context of
-specific topics.  Additionally, we would like to perform other forms of
-stratification, such as setting thresholds on interaction length, to calculate
-PageRank in the context of long and potentially insightful interactions.
 
-The PageRank-based methodology to identify user influence in this paper is so
-far the closest to our proposed approach. However, instead of simply identifying
-expert users through a classification task, we hope to build a generalizable
-model to predict karma scores specific to different websites based on
-per-website observations.  In addition, we plan to use some of their intuitive
-conclusions -- such as the higher reputation earned by early users and frequent
-contributors -- in forming an ambitious baseline for our evaluations.
-
-\subsection{Measuring User Influence in Twitter: The Million Follower Fallacy
+\subsubsection{Measuring User Influence in Twitter: The Million Follower Fallacy
   \citep{cha2010measuring}}
 
 Like \cite{bakshy2011everyone}, \citet{cha2010measuring} study a more practical
@@ -170,6 +141,48 @@ and mention probabilities $P$) when not maintained through regular engagement
 with the community. The second is tracking the influence gains by select users
 to explain the often meteoric rise in influence of topical posters during major
 events.
+
+\subsection{Critique}
+Both \citet{bakshy2011everyone} and \citet{cha2010measuring} consider
+\textit{influence} in the Twitter graph, as defined by the ability to generate
+cascades. One of the broader issues with this approach is that influence
+is a conceptual quality instead of something directly measureable. Unlike karma,
+there isn't a notion of a \textit{gold set} from which cascades can be measured.
+We feel these papers could be greatly strengthened by linking this to a known
+quantity instead of an abstract concept.
+
+The role of content isn't particularly well-explored in any of the Twitter papers.
+Specifically, we take issue with the \citet{bakshy2011everyone}: they analyze
+the role of content in cascades by hand-classifying the tweets by mechanical turk.
+The details of this process are somewhat sparse in the paper and the human
+dependency makes their dataset limited in size and scope. We believe a better
+approach would be to cluster tweets/URLs by their words, for example by 
+a topic modelling algorithm such as Latent Dirichlet Allocation (LDA)
+\citep{blei2003latent}. Although the clusters would not be perfect, the assignments
+would give an objective category by which to compare the role of cascades.
+
+% Milind, I just copied and pasted your analysis from paper #2. Can you 
+% expand and let it make sense here?
+Converesely, \citet{movshovitzanalysis} analyze a different dataset 
+(StackOverflow reputation) in a very concrete, mathematical fashion.
+One of the shortcomings of this paper is that while it notes the discrepancies
+betwen reputation scores and PageRank, they did not attempt to explain them --
+this is an area we would like to look into. Specifically, we would like to
+perform topic-sensitive PageRank and LDA analysis (described in Section
+\ref{sec:models}) to see if stronger correlation occurs in the context of
+specific topics.  Additionally, we would like to perform other forms of
+stratification, such as setting thresholds on interaction length, to calculate
+PageRank in the context of long and potentially insightful interactions.
+
+The PageRank-based methodology to identify user influence in this paper is so
+far the closest to our proposed approach. However, instead of simply identifying
+expert users through a classification task, we hope to build a generalizable
+model to predict karma scores specific to different websites based on
+per-website observations.  In addition, we plan to use some of their intuitive
+conclusions -- such as the higher reputation earned by early users and frequent
+contributors -- in forming an ambitious baseline for our evaluations.
+
+%Milind please critique your final paper
 
 \subsection{Brainstorming and Future Directions}
 Two of our papers address the concept of influence in the Twitter graph, where it is
