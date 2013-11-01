@@ -16,3 +16,4 @@ pom.xml.asc
 /reports/**/*.blg
 /reports/**/*.fdb_latexmk
 /reports/**/*.synctex.gz
+/data/*
