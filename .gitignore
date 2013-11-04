@@ -17,3 +17,5 @@ pom.xml.asc
 /reports/**/*.fdb_latexmk
 /reports/**/*.synctex.gz
 /data/*
+.DS_STORE
+*.pyc
