@@ -63,9 +63,6 @@ if __name__ == "__main__":
         for item in items:
             need_to_crawl_users.add(item['username'])
 
-        if len(need_to_crawl_users) > 100000:
-            break
-
     if os.path.exists(USER_FILE):
         with open(USER_FILE, "r") as f:
             for line in f:

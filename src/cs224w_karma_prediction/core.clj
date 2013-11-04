@@ -1,6 +1,8 @@
-(ns cs224w-karma-prediction.core)
+(ns cs224w-karma-prediction.core
+  (:import (org.jruby.javasupport JavaEmbedUtils))
+)
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn run-jruby-script [scriptname]
+  (let [runtime (JavaEmbedUtils)])
+)
+

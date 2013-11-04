@@ -71,11 +71,11 @@ def populate_users(conn, users_file="/Users/tdimson/personal/cs224w-karma-predic
     c = conn.cursor()
     c.execute("PRAGMA synchronous=OFF")
     with open(users_file) as f:
-        insert_tuples = iunique((line2insert(e) for e in f), key=lambda x:x[0])
+        insert_tuples = iunique((line2insert(e) for e in f), key=lambda x:x[0].strip())
         chunks = chunk(insert_tuples, 10000)
         clean = ([e for e in chunk if e] for chunk in chunks)
         for i, bulk in enumerate(clean):
-            c.executemany("INSERT INTO hn_users(username, karma, about, join_date) VALUES (?,?,?,?)", bulk)
+            c.executemany("INSERT OR IGNORE INTO hn_users(username, karma, about, join_date) VALUES (?,?,?,?)", bulk)
             conn.commit()
             sys.stdout.write("\r%d" % (i * 10000))
             sys.stdout.flush()
@@ -104,7 +104,7 @@ def populate_submissions(conn):
 def populate_comments(conn):
     def comment2insert(o):
         return (
-            o["_id"], o["discussion"]["sigid"], o["parent_sigid"], o["username"], o["id"], o["points"], o["text"], iso2epoch(o["create_ts"]), o["text"]
+            o["_id"], o["discussion"]["sigid"], o["parent_sigid"], o["username"], o["id"], o["points"], o["text"] or "", iso2epoch(o["create_ts"])
         )
 
     print "Inserting comments"
@@ -120,8 +120,8 @@ def populate_comments(conn):
             comments = json.loads(f.read())
 
         insert_comments = [comment2insert(com) for com in comments]
-        c.executemany("""INSERT INTO hn_comments(id, hn_submission_id, parent_id, username, hn_id, points, text, create_date, text)
-                       VALUES (?,?,?,?,?,?,?,?,?)""", insert_comments)
+        c.executemany("""INSERT INTO hn_comments(id, hn_submission_id, parent_id, username, hn_id, points, text, create_date)
+                       VALUES (?,?,?,?,?,?,?,?)""", insert_comments)
         conn.commit()
         num_c += len(insert_comments)
 
