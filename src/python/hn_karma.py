@@ -52,7 +52,7 @@ def nx_interaction_graph(c):
     for src, g in itertools.groupby(res, key=lambda x: x[0]):
         G.add_weighted_edges_from(list(g))
         if i % 10000 == 0:
-            print "Reached edge %d" % i
+            print "Reached edges for node %d" % i
         i += 1
 
     print "Finished adding edges"
