@@ -5,7 +5,11 @@
 \usepackage{multirow}
 \usepackage{url}
 \usepackage[numbers]{natbib}
+\usepackage{graphicx}
+\usepackage{subcaption}
 \newgeometry{margin=3.40cm}
+
+\graphicspath{{../figures/}}
 
 \title{{\large CS224W Project Milestone} \\
   What is karma? Quantifying online influence and credibility
@@ -35,7 +39,7 @@
 % Recommended length 3-5 pages
 
 \section{Introduction}
-
+%Needs revision
 Many online communities explicitly publicize the concept of \textit{karma} or
 \textit{reputation} for users, computed as a sum of votes by other members of
 the community. These explicit measures are often seen as proxies for more
@@ -43,13 +47,53 @@ intangible notions such as \textit{influence} (the ability of a member to
 persuade others) and \textit{credibility} (the trustworthiness of the user as an
 member of the community). In this paper, we describe the range of network
 characteristics, interactions, and temporal factors that affect the accumulation
-of karma points. Using this, we build a model that predicts karms values.
+of karma points. Using this, we build a model that predicts karma values.
 
 Our topic is motivated by the class content discussing how users evaluate
 each other in social graphs. We wish to determine whether karma be regarded
 as something beyond a mere collection of votes. Our subsequent model for 
 could inform a general framework for quantifying influence and credibility
 on other graphs (including those without \textit{users} as nodes).
+
+\section*{Data Collection}
+
+\section*{Initial Findings}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{hn_karma_distribution}
+\caption{Hacker News}
+\label{fig:hnkarma}
+\end{subfigure}%
+\begin{subfigure}{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{su_karma_distribution}
+\caption{Super User}
+\label{fig:sukarma}
+\end{subfigure}
+\caption{Karma distributions in our datasets with fitted power law distributions}
+\label{fig:karma}
+\end{figure}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{| r | l l |}
+\hline
+& \textbf{Hacker News} & \textbf{Super User} \\
+\hline
+Users (Nodes) & 175091 & 190781 \\
+Replies (Edges) & 2747966 & 266673 \\
+Average Karma / Reputation & 131.8 & 83.1 \\
+Largest SCC Fraction & 43\% & 3.8\% \\
+Largest WCC Fraction & 63\% & 46\% \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Graph statistics for our implied interaction graphs}
+\label{tab:graphstats}
+\end{table}
 
 \section{Literature review}
 \subsection{Everyone's an influencer: quantifying influence on Twitter \citep{bakshy2011everyone}}
