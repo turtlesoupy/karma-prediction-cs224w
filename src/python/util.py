@@ -46,13 +46,21 @@ def disk_cache(filename_base):
                 return method(*args, **kwargs)
 
             cache_dir = kwargs["cache_dir"]
+            cache_key = kwargs.get("cache_key", None)
             del kwargs["cache_dir"]
+            if cache_key:
+                del kwargs["cache_key"]
 
             arg_hsh = hashlib.md5()
             arg_hsh.update(inspect.getsource(method))
-            arg_hsh.update(json.dumps(args))
-            arg_hsh.update(json.dumps(args, sort_keys=True))
-            cache_file = os.path.join(cache_dir, "%s-%s.pickle" % (filename_base, arg_hsh.hexdigest()))
+            if cache_key is None:
+                arg_hsh.update(json.dumps(args))
+                arg_hsh.update(json.dumps(kwargs, sort_keys=True))
+                cache_file = os.path.join(cache_dir, "%s-%s.pickle" % (filename_base, arg_hsh.hexdigest()))
+            else:
+                arg_hsh.update(cache_key)
+                cache_file = os.path.join(cache_dir, "%s-%s-%s.pickle" % (filename_base, cache_key, arg_hsh.hexdigest()))
+
             if os.path.exists(cache_file):
                 print "Using cache at %s" % cache_file
                 with open(cache_file) as f:

@@ -27,8 +27,8 @@ def compute_network_stats(graph):
         "Nodes": num_nodes,
         "Edges": num_edges,
         "Largest SCC Fraction": largest_strongly_connected,
-        "Largest WCC Fraction": largest_weakly_connected
-        "Average Karma / Reputation": average_karma
+        "Largest WCC Fraction": largest_weakly_connected,
+        "Average Karma / Reputation": average_karma,
     }
 
 def network_stats_table(*dicts):
