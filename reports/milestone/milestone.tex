@@ -181,6 +181,10 @@ Largest WCC Fraction & 63\% & 46\% \\
 \label{tab:graphstats}
 \end{table}
 
+
+\section{Baseline Predictor}
+\label{sec:baseline}
+
 \begin{table}[h]
 \begin{center}
 \begin{tabular}{| r | l l l l |}
@@ -198,9 +202,19 @@ Baseline+Weighted PageRank & \textbf{407.19} & \textbf{0.75} & \textbf{209.32} &
 \caption{Regression performance for our baseline and improved baseline models.}
 \label{tab:regression}
 \end{table}
-
-\section{Baseline Predictor}
 % Milind, if you take a pass I'll take a pass
+
+\subsection{Weighted PageRank}
+As discussed in Section~\ref{sec:baseline}, we noticed a substantial improvement
+when switching from vanilla PageRank to a weighted variant. Here, we modify
+our random walk so that instead of following outbound edges uniformly at random
+we sample from a weighted distribution:
+\begin{align}
+P(i\rightarrow j)  &= \frac{\text{Num Replies}\ i \rightarrow j}{\sum_k \text{Num
+replies}\ i \rightarrow k}
+\end{align}
+This captures the intuition that ``deeper'', multi-commented discussions
+between two users are more important than one-off replies.
 
 \section{Next steps}
 % Milind zone - cite LDA?
