@@ -39,9 +39,8 @@
 % Recommended length 3-5 pages
 
 \section{Introduction}
-%Needs revision
 Many online communities explicitly publicize the concept of \textit{karma} or
-\textit{reputation} for users, computed as a sum of votes by other members of
+\textit{reputation} for users, computed as a sum of positive votes by other members of
 the community. These explicit measures are often seen as proxies for more
 intangible notions such as \textit{influence} (the ability of a member to
 persuade others) and \textit{credibility} (the trustworthiness of the user as an
@@ -50,14 +49,42 @@ characteristics, interactions, and temporal factors that affect the accumulation
 of karma points. Using this, we build a model that predicts karma values.
 
 Our topic is motivated by the class content discussing how users evaluate
-each other in social graphs. We wish to determine whether karma be regarded
-as something beyond a mere collection of votes. Our subsequent model for 
+each other in social graphs. We wish to determine whether network properties of the 
+\textit{interaction graph} can explain karma metrics. Our subsequent model for 
 could inform a general framework for quantifying influence and credibility
 on other graphs (including those without \textit{users} as nodes).
 
-\section*{Data Collection}
+\section{Data Collection}
+For our report, we will be focusing on two communities: \textbf{Hacker News}
+and the \textbf{StackExchange} family of websites. On Hacker News, users submit
+technology-related stories as \textit{submissions} which other users
+use as an anchor to threaded discussions. A user's \textit{karma} is computed
+as a sum of up-votes to their stories and comments. The StackExchange family of 
+websites are question-and-answer sites where a user will post a question and
+solicit answers from the community. A user's \textit{reputation} is a weighted
+sum based on the number of their questions and answers that are accepted, and
+whether their comments and posts are voted as helpful by the community.
 
-\section*{Initial Findings}
+Gathering data for Hacker News came with many challenges: there is no published
+dump of hacker news data, and no official API to help fetch. Fortunately, the creator
+of ThriftDB has created HNSearch (\url{https://www.hnsearch.com/}) as a technology
+demo for his database. In addition to a public website, there is an unofficial API
+to support mechanical search queries. Although the API is limited to collecting 
+only 100 recent items, we were able to circumvent this by constructing queries with limited
+date ranges. Over the course of a week, we extracted JSON files for every comment,
+submission and user on Hacker News by repeatedly querying the API. To our knowledge,
+ours is the only complete dump of this data available on the internet.
+
+%Milind can you talk about using SuperUser as a starting point, as well as discussing how
+% you collected data. I think it is fine for this to be smaller than HN the dump is published
+
+After collecting the raw data for both datasets, we created an SQLite database
+with normalized columns for all the fields. We also created an interaction graph
+by collecting $(\text{replier}, \text{parent poster})$ edges and then caching the graphs
+on disk as a NetworkX structure. A summary of our datasets is available in 
+Table~\ref{tab:graphstats}.
+
+\section{Initial Findings}
 
 \begin{figure}[h]
 \centering
@@ -94,6 +121,29 @@ Largest WCC Fraction & 63\% & 46\% \\
 \caption{Graph statistics for our implied interaction graphs}
 \label{tab:graphstats}
 \end{table}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{| r | l l |}
+\hline
+Model & \textbf{Hacker News RMSE} & \textbf{Super User RMSE} \\
+\hline
+Baseline &  & \\
+Baseline+PageRank & & \\
+Baseline+Weighted PageRank & & \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Regression performance for our baseline and improved baseline models.}
+\label{tab:regression}
+\end{table}
+
+\section{Next steps}
+% Milind zone
+
+\section{Conclusion}
+% Milind zone
+
 
 \section{Literature review}
 \subsection{Everyone's an influencer: quantifying influence on Twitter \citep{bakshy2011everyone}}
