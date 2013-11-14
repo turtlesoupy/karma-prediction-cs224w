@@ -7,7 +7,8 @@
 \usepackage[numbers]{natbib}
 \usepackage{graphicx}
 \usepackage{subcaption}
-\newgeometry{margin=2.20cm}
+\usepackage{float}
+\newgeometry{margin=2.50cm}
 
 \graphicspath{{../figures/}}
 
@@ -148,27 +149,7 @@ distribution.  Our acting hypothesis is that Hacker News is an older community
 User is relatively new (circa 2011) that split off of the existing StackOverflow
 community.
 
-Aligning with our karma distributions, Table~\ref{tab:graphstats} shows
-interaction graph statistics for both communities. Although they are roughly
-commensurate in users, Hacker News has an order of magnitude more edges in the
-graph due to the threaded nature of discussions. The disparity between the
-communities increases when we begin to look at strongly connected components
-(SCCs): over 40\% of Hacker News members are part of their largest SCC while
-only 3.8\% of Super User members are part of their largest SCC\@. This reflects
-the fact that the Q\&A site has fewer ``spanning'' conversations and a much
-looser graph structure. 
-
-For our milestone, we work on the hypothesis that \textit{karma} on Hacker News
-and \textit{reputation} on Super News on these two websites are complementary
-notions that can be modelled using similar intuitions. However, the differences
-in graph structure revealed through exploratory analysis indicate that the
-metrics may be more disparate than first thought. This is further confirmed when
-we actually perform prediction in Section~\ref{sec:prediction}. In our
-final report, we will use an umbrella term for the two different metrics and
-highlight the aspects that are shared between them, as well as the aspects that
-diverge.
-
-\begin{table}[h]
+\begin{table}[H]
 \begin{center}
 \begin{tabular}{| r | l l |}
 \hline
@@ -186,11 +167,35 @@ Largest WCC Fraction & 63\% & 46\% \\
 \label{tab:graphstats}
 \end{table}
 
+Aligning with our karma distributions, Table~\ref{tab:graphstats} shows
+interaction graph statistics for both communities. Although they are roughly
+commensurate in users, Hacker News has an order of magnitude more edges in the
+graph due to the threaded nature of discussions. The disparity between the
+communities increases when we begin to look at strongly connected components
+(SCCs): over 40\% of Hacker News members are part of their largest SCC while
+only 3.8\% of Super User members are part of their largest SCC\@. This reflects
+the fact that the Q\&A site has fewer ``spanning'' conversations and a much
+looser graph structure. The largest weakly connected component (WCC) is an order
+of magnitude larger than the largest SCC on Super User and it suggests 
+distinct roles of \textit{questioners} and \textit{answers} with
+relatively little overlap. Further investigations into roles are discussed
+in Section~\ref{sec:next-steps}.
+
+For our milestone, we work on the hypothesis that \textit{karma} on Hacker News
+and \textit{reputation} on Super News on these two websites are complementary
+notions that can be modelled using similar intuitions. However, the differences
+in graph structure revealed through exploratory analysis indicate that the
+metrics may be more disparate than first thought. This is further confirmed when
+we actually perform prediction in Section~\ref{sec:prediction}. In our
+final report, we will use an umbrella term for the two different metrics and
+highlight the aspects that are shared between them, as well as the aspects that
+diverge.
+
+
 \section{Predicting karma and reputation}
 \label{sec:prediction}
 
-\subsection{Baseline}
-
+\subsection{Regression Baseline}
 Based on intuition from \citet{movshovitzanalysis}, we construct a baseline
 feature matrix from the interaction graphs with two features:
 \begin{itemize}
@@ -199,43 +204,7 @@ feature matrix from the interaction graphs with two features:
   \item the length of time, in seconds, since the user joined the website
 \end{itemize}
 
-We then perform least-squares linear regression on the set of users.
-Table~\ref{tab:regression} summarizes the results of the regression. While the
-root-mean-square error is not particularly helpful without a baseline, we also
-include the coefficient of determination ($R^2$) which is a score in the range
-$[0, 1]$ that indicates how well the points fit the regression curve.
-
-Interestingly, we observe that the $R^2$ value for Hacker News is relatively
-poor (0.5), while for Super User the regression curve fits very well (0.93). The
-fact that our matrix of two baseline features fits poorly on Hacker News
-indicates that karma is probably not well explained simply by how much a person
-posts and how long they've been on the site. This intuitively makes sense, since
-karma depends on people's \emph{perception} of a user. The reputation score, on
-the other hand, is a measure of user ``authority'', and older, more active users
-are likely to have high reputation simply by virtue of their status.
-
-\subsection{Improving regression results with PageRank}
-\label{sec:baseline-and-pagerank}
-
-To enhance our set of features, we run PageRank on the user interaction graphs.
-PageRank is a natural choice for a feature, since it intrinsically captures the
-importance of a graph node. The addition of PageRank as a feature improves the
-baseline regression model considerably, as illustrated in
-Table~\ref{tab:regression}.
-
-\subsection{Weighted PageRank}
-As discussed in Section~\ref{sec:baseline-and-pagerank}, we noticed a substantial improvement
-when switching from vanilla PageRank to a weighted variant. Here, we modify
-our random walk so that instead of following outbound edges uniformly at random
-we sample from a weighted distribution:
-\begin{align}
-P(i\rightarrow j)  &= \frac{\text{Num Replies}\ i \rightarrow j}{\sum_k \text{Num
-replies}\ i \rightarrow k}
-\end{align}
-This captures the intuition that ``deeper'', multi-commented discussions
-between two users are more important than one-off replies.
-
-\begin{table}[h]
+\begin{table}[H]
 \begin{center}
 \begin{tabular}{| r | l l l l |}
 \hline
@@ -253,32 +222,47 @@ Baseline+Weighted PageRank & \textbf{407.19} & \textbf{0.75} & \textbf{209.32} &
 \label{tab:regression}
 \end{table}
 
-\subsection{Classification}
+We then perform least-squares linear regression on the set of users.
+Table~\ref{tab:regression} summarizes the results of the regression. While the
+root-mean-square error is not particularly helpful without a baseline, we also
+include the coefficient of determination ($R^2$) which is a score in the range
+$[0, 1]$ that indicates how well the points fit the regression curve.
 
+Interestingly, we observe that the $R^2$ value for Hacker News is relatively
+poor (0.5), while for Super User the regression curve fits very well (0.93). The
+fact that our matrix of two baseline features fits poorly on Hacker News
+indicates that karma is probably not well explained simply by how much a person
+posts and how long they've been on the site. This intuitively makes sense, since
+karma depends on people's \emph{perception} of a user. The reputation score, on
+the other hand, is a measure of user ``authority'', and older, more active users
+are likely to have high reputation simply by virtue of their status.
+
+\subsection{Improving results with PageRank}
+\label{sec:baseline-and-pagerank}
+Matching the intuition that PageRank is a measure of influence, we also tried
+enhancing our baseline with a PageRank feature. As illustrated in Table~\ref{tab:regression},
+vanilla PageRank appears to improve performance considerably on Hacker News and have
+very little effect on our Super User data. This could be explained by the large SCC
+in Hacker News and is a top candidate for further exploration.
+
+Table~\ref{tab:regression} also shows a substantial improvement
+when switching from vanilla PageRank to a weighted variant. Here, we modify
+our random walk so that instead of following outbound edges uniformly at random
+we sample from a weighted distribution:
+\begin{align}
+P(i\rightarrow j)  &= \frac{\text{Num Replies}\ i \rightarrow j}{\sum_k \text{Num
+replies}\ i \rightarrow k}
+\end{align}
+This captures the intuition that ``deeper'', multi-commented discussions
+between two users are more important than one-off replies.
+
+
+\subsection{Classification}
 We also model the prediction task as a classification problem, where we define a
 threshold for high karma and reputation on either website. Thus, we predict the
 probability of a user being ``famous'' or an ``expert''.
 
-For the classification task, we define a ``high karma'' user on Hacker News as
-anyone with a karma above 2500, while a user with reputation above 1000 on Super
-User is defined as ``high reputation''. These thresholds were defined
-qualitatively based on an inspection of the karma/reputation distribution
-(although we expect to formalize our choice of threshold; see
-Section~\ref{sec:next-steps}). We run a logistic regression model on our dataset,
-and plot the precision-recall and ROC curves. Figure~\ref{fig:classification}
-shows the results for classification on our enhanced feature matrix.
-
-The classification results for the datasets are partly consistent with the
-regression results, since Super User does well in this instance also (the AUC
-for the ROC curve is 0.99). On the other hand, this model does poorly on Hacker
-News (even with PageRank). While this would be true to an extent (since it
-appears that there are a lot of hidden influencers for Hacker News karma
-values), it is more likely due to a bug in the way we collect data for Hacker
-News. This is something we are working to fix immediately. In any case, we
-expect a better-shaped, but still poor, precision-recall curve for Hacker News
-karmas.
-
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{subfigure}{0.5\textwidth}
 \centering
@@ -297,44 +281,53 @@ Rank}
 \label{fig:classification}
 \end{figure}
 
+
+For the classification task, we define a ``high karma'' user on Hacker News as
+anyone with a karma above 2500, while a user with reputation above 1000 on Super
+User is defined as ``high reputation''. These thresholds were defined
+qualitatively based on an inspection of the karma/reputation distribution
+(although we expect to formalize our choice of threshold; see
+Section~\ref{sec:next-steps}). We run a logistic regression model on our dataset,
+and plot the precision-recall and ROC curves. Figure~\ref{fig:classification}
+shows the results for classification on our enhanced feature matrix.
+
+The classification results for the datasets are partly consistent with the
+regression results, since Super User does well in this instance also (the AUC
+for the ROC curve is 0.99). On the other hand, this model does poorly on Hacker
+News (even with PageRank). We believe that this is due to a bug in our Hacker News
+training set which we are working to fix immediately. In any case, we
+expect a better-shaped, but still poor, precision-recall curve for Hacker News
+karmas.
+
 \section{Next steps}
 \label{sec:next-steps}
+So far, our modeling of karma has been restricted to a few simplistic baselines.
+For our final report, we anticipate coming up with a heavier, network based
+explanation for karma. We are particularly interested in investigating the concept of
+\emph{network constraint} to see if high-karma is associated with ``long-range''
+connections. Since we are dealing with reply relationships, this has a natural
+connection to \textit{topic modelling}. We wish to investigate whether karma
+distributions are effected by the dominant topic of a user, and whether users with
+relatively uniform topic distributions also have high karma. We can quantify
+topics by applying Latent Dirichlet Allocation (LDA) \citep{blei2003latent}
+on the comments, posts, and replies, Going deeper, we could combine our LDA-topic analysis with PageRank by
+performing Topic-Sensitive PageRank \citep{haveliwala2002topic} on our nodes
+and seeing if graph authority is more predictive of karma within certain
+topics. This hypothesis was validated in predicting following relationships
+on the Twitter graph in \citet{weng2010twitterrank}
 
-There are a number of immediate next steps for this project, as well as
-potential areas of investigation as mentioned in the proposal.
+In regards to improving classification performance, we are immediately
+investing our Hacker News data bug. Beyond that, we also believe that
+we could automate the process of determining thresholds for ``high-karma''
+individuals. In the limit, we can imagine using a maximum entropy classifier
+to classify the karma range with logarithmic divisions.
 
-Firstly, we will focus on classification performance:
-\begin{itemize}
-  \item We will investigate whether our data collection for Hacker News is buggy,
-    and whether that explains the extremely poor classification performance.
-  \item Currently, we hard code rough thresholds for classification on karma and
-    reputation. We will study the effect of different thresholds, and formalize
-    the choice of threshold.
-\end{itemize}
-
-Secondly, we will use a more advanced set of models:
-\begin{itemize}
-  \item We will apply Latent Dirichlet Allocation (LDA) \citep{blei2003latent}
-    on the comments, posts, and replies, and determine a set of topics for
-    different communities.
-  \item Going deeper, we could combine our LDA-topic analysis with PageRank by
-    performing Topic-Sensitive PageRank \citep{haveliwala2002topic} on our nodes
-    and seeing if graph authority is more predictive of karma within certain
-    topics. This hypothesis was validated in predicting following relationships
-    on the Twitter graph in \citet{weng2010twitterrank}
-  \item We will apply some newly learnt concepts from lecture, including the
-    concept of \emph{network constraint}, to further characterize users with
-    high karma and reputation.
-\end{itemize}
-
-Finally, we will develop and test our models and intuitions on new data:
-\begin {itemize}
-  \item We will definitely use the Stack Overflow dataset, which is almost 20 times larger than the
-    Super User dataset.
-  \item We might (if time permits) attempt to run our karma prediction process
-    on non-social graphs, like the Wikipedia network, and determine ``karma''
-    values for nodes, such as articles.
-\end{itemize}
+Finally, we want to test our models and intuitions on new data. In particular, we 
+will expand our Super User analysis to include \textbf{Stack Overflow}, the largest
+of the StackExchange website family. Time permitting, we will also validate our
+model on graphs where nodes are not \textit{users} such as Wikipedia. It would
+be particularly fascinating if karma has an intuitive meaning when applied to 
+articles. 
 
 \bibliographystyle{abbrvnat}
 \bibliography{milestone}
