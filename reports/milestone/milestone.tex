@@ -7,7 +7,7 @@
 \usepackage[numbers]{natbib}
 \usepackage{graphicx}
 \usepackage{subcaption}
-\newgeometry{margin=3.40cm}
+\newgeometry{margin=2.20cm}
 
 \graphicspath{{../figures/}}
 
@@ -23,22 +23,8 @@
 \begin{document}
 \maketitle
 
-%% TODO: Write and include abstract.
-%% TODO: This is the expected format:
-% We expect that you have completed 60% of the project
-% Provide a complete picture of your project even if certain key parts have not yet been implemented/solved.
-% Include the parts of your project which have been completed so far, such as:
-% * Thorough introduction of your problem
-% * Review of the relevant prior work
-% * Description of the data collection process
-% * Description of any initial findings or summary statistics from your dataset
-% * Description of any mathematical background necessary for your problem
-% * Formal description of any important algorithms used
-% * Description of general difficulties with your problem which bear elaboration
-% Make sure to at least outline the parts which have not yet been completed so that it is clear specifically what you plan to do for the final version.
-% Recommended length 3-5 pages
-
 \section{Introduction}
+
 Many online communities explicitly publicize the concept of \textit{karma} or
 \textit{reputation} for users, computed as a sum of positive votes by other members of
 the community. These explicit measures are often seen as proxies for more
@@ -55,12 +41,13 @@ could inform a general framework for quantifying influence and credibility
 on other graphs (including those without \textit{users} as nodes).
 
 \section{Prior Work}
+
 Most prior literature focuses on the abstract quality of \textit{influence}.
 Both \citet{bakshy2011everyone} and \citet{cha2010measuring} define
 influence as the ability to generate cascades on the Twitter graph. The authors
-use local feature of users (e.g. number of followers, number of tweets,
+use local feature of users (e.g.\ number of followers, number of tweets,
 retweets, mentions) in order to predict the ability for users to generate
-cascades. 
+cascades.
 
 \citet{cha2010measuring} emphasizes the topic-specificity of influence -- they challenge
 the notion that there is a common set of ``influentials'' who have
@@ -81,17 +68,20 @@ rations in their final random forest model. They are
 able to achieve an Area under the Curve of 81\% when classifying users
 with reputations of more than 2400.
 
-
 \section{Data Collection}
-For our report, we will be focusing on two communities: \textbf{Hacker News}
-and the \textbf{StackExchange} family of websites. On Hacker News, users submit
-technology-related stories as \textit{submissions} which other users
-use as an anchor to threaded discussions. A user's \textit{karma} is computed
-as a sum of up-votes to their stories and comments. The StackExchange family of 
-websites are question-and-answer sites where a user will post a question and
-solicit answers from the community. A user's \textit{reputation} is a weighted
-sum based on the number of their questions and answers that are accepted, and
-whether their comments and posts are voted as helpful by the community.
+
+In this paper, we will be focusing on two relatively large internet communities:
+\textbf{Hacker News} and the \textbf{StackExchange} family of
+websites\footnote{One of our additional final report ideas, however, is to apply
+  our techniques to assign scores to entities on sites that are not social
+networks.}. On Hacker News, users submit technology-related stories as
+\textit{submissions} which other users use as an anchor to threaded discussions.
+A user's \textit{karma} is computed as a sum of up-votes to their stories and
+comments.  The StackExchange family of websites are question-and-answer sites
+where a user will post a question and solicit answers from the community. A
+user's \textit{reputation} is a weighted sum based on the number of their
+questions and answers that are accepted, and whether their comments and posts
+are voted as helpful by the community.
 
 Gathering data for Hacker News came with many challenges: there is no published
 dump of hacker news data, and no official API to help fetch. Fortunately, the creator
@@ -100,23 +90,32 @@ demo for his database. In addition to a public website, there is an unofficial A
 to support mechanical search queries. Although the API is limited to collecting 
 only 100 recent items, we were able to circumvent this by constructing queries with limited
 date ranges. Over the course of a week, we extracted JSON files for every comment,
-submission and user on Hacker News by repeatedly querying the API. To our knowledge,
+submission and user on Hacker News by repeatedly querying the API\@. To our knowledge,
 ours is the only complete dump of this data available on the internet.
 
-%Milind can you talk about using SuperUser as a starting point, as well as discussing how
-% you collected data. I think it is fine for this to be smaller than HN the dump is published
+Collecting data for the StackExchange family of websites was relatively easier.
+An anonymized data dump of the entire series of websites is released every three
+months\footnote{http://www.clearbits.net/creators/146-stack-exchange-data-dump}
+in XML format. We wrote a Python script to parse the XML data and extract
+relevant fields. Our initial emphasis is on \textbf{Super User}, which is a website where
+enthusiasts and power users users ask questions about various aspects of
+computer software and hardware. We chose this specific website because the data
+is smaller in size (the website being new relative to Stack Overflow, the first
+website on the StackExchange network. For the final report, however, we will
+also include analysis on StackOverflow data, which is included in the data dump
+and is thus trivial to process.
 
 After collecting the raw data for both datasets, we created an SQLite database
 with normalized columns for all the fields. We also created an interaction graph
-by collecting $(\text{replier}, \text{parent poster})$ edges and then caching the graphs
-on disk as a NetworkX structure. A summary of our datasets is available in 
-Table~\ref{tab:graphstats}.
+by collecting $(\text{replier}, \text{parent poster})$ edges and then caching
+the graphs on disk as a NetworkX structure. A summary of our datasets is
+available in Table~\ref{tab:graphstats}.
 
 As a final step, we divided each dataset into train, validation and test sets at
 a 70\%/15\%/15\% split. Our milestone results are reported on our validation
 set.
 
-\section{Initial Findings}
+\section{Exploratory data analysis}
 
 \begin{figure}[h]
 \centering
@@ -137,31 +136,37 @@ set.
 \end{figure}
 
 We begin our data analysis with a plot of the complementary cumulative
-distributinos of karma and reputations 
-over users as shown in Figure~\ref{fig:karma}. As expected, both Hacker News
-and Super User distributions are well-modelled power-law variants. Using 
-Python's Powerlaw package~\cite{alstott_powerlaw:_2013} we also show fitted
-models. Both models have an $\alpha$ coefficient near 1.5 and begin near
-the origin. Notably, a damped power law is a better fit than
-a power law on our Hacker News distribution and the reverse is true for
-our Super User reputation distribution. Our acting hypothesis is that
-Hacker News is an older community (circa 2007) with a few early adopters with incredibly
-high karma while Super User is relatively new (circa 2011) that split off
-of the existing StackOverflow community. 
+distributions of karma and reputations over users as shown in
+Figure~\ref{fig:karma}. As expected, both Hacker News and Super User
+distributions are well-modelled power-law variants. Using Python's
+\texttt{powerlaw} package~\cite{alstott_powerlaw:_2013} we also show fitted
+models. Both models have an $\alpha$ coefficient near 1.5 and begin near the
+origin. Notably, a damped power law is a better fit than a power law on our
+Hacker News distribution and the reverse is true for our Super User reputation
+distribution.  Our acting hypothesis is that Hacker News is an older community
+(circa 2007) with a few early adopters with incredibly high karma while Super
+User is relatively new (circa 2011) that split off of the existing StackOverflow
+community.
 
 Aligning with our karma distributions, Table~\ref{tab:graphstats} shows
 interaction graph statistics for both communities. Although they are roughly
 commensurate in users, Hacker News has an order of magnitude more edges in the
 graph due to the threaded nature of discussions. The disparity between the
 communities increases when we begin to look at strongly connected components
-(SCCs): over 40\% of Hacker News members are part of their largest SCC while only
-3.8\% of Super User members are part of their largest SCC. This reflects the
-fact that the Q\&A site has fewer ``spanning'' conversations and a much looser
-graph structure. 
+(SCCs): over 40\% of Hacker News members are part of their largest SCC while
+only 3.8\% of Super User members are part of their largest SCC\@. This reflects
+the fact that the Q\&A site has fewer ``spanning'' conversations and a much
+looser graph structure. 
 
-In general, we are seeing that the notation of \textit{reputation} on
-Super User and \textit{karma} on Hacker News are more disparate than we first
-thought.
+For our milestone, we work on the hypothesis that \textit{karma} on Hacker News
+and \textit{reputation} on Super News on these two websites are complementary
+notions that can be modelled using similar intuitions. However, the differences
+in graph structure revealed through exploratory analysis indicate that the
+metrics may be more disparate than first thought. This is further confirmed when
+we actually perform prediction in Section~\ref{sec:prediction}. In our
+final report, we will use an umbrella term for the two different metrics and
+highlight the aspects that are shared between them, as well as the aspects that
+diverge.
 
 \begin{table}[h]
 \begin{center}
@@ -181,9 +186,54 @@ Largest WCC Fraction & 63\% & 46\% \\
 \label{tab:graphstats}
 \end{table}
 
+\section{Predicting karma and reputation}
+\label{sec:prediction}
 
-\section{Baseline Predictor}
-\label{sec:baseline}
+\subsection{Baseline}
+
+Based on intuition from \citet{movshovitzanalysis}, we construct a baseline
+feature matrix from the interaction graphs with two features:
+\begin{itemize}
+  \item the number of posts (posts, replies and comments) made by a user since
+    joining the website
+  \item the length of time, in seconds, since the user joined the website
+\end{itemize}
+
+We then perform least-squares linear regression on the set of users.
+Table~\ref{tab:regression} summarizes the results of the regression. While the
+root-mean-square error is not particularly helpful without a baseline, we also
+include the coefficient of determination ($R^2$) which is a score in the range
+$[0, 1]$ that indicates how well the points fit the regression curve.
+
+Interestingly, we observe that the $R^2$ value for Hacker News is relatively
+poor (0.5), while for Super User the regression curve fits very well (0.93). The
+fact that our matrix of two baseline features fits poorly on Hacker News
+indicates that karma is probably not well explained simply by how much a person
+posts and how long they've been on the site. This intuitively makes sense, since
+karma depends on people's \emph{perception} of a user. The reputation score, on
+the other hand, is a measure of user ``authority'', and older, more active users
+are likely to have high reputation simply by virtue of their status.
+
+\subsection{Improving regression results with PageRank}
+\label{sec:baseline-and-pagerank}
+
+To enhance our set of features, we run PageRank on the user interaction graphs.
+PageRank is a natural choice for a feature, since it intrinsically captures the
+importance of a graph node. The addition of PageRank as a feature improves the
+baseline regression model considerably, as illustrated in
+Table~\ref{tab:regression}.
+
+\subsection{Weighted PageRank}
+As discussed in Section~\ref{sec:baseline-and-pagerank}, we noticed a substantial improvement
+when switching from vanilla PageRank to a weighted variant. Here, we modify
+our random walk so that instead of following outbound edges uniformly at random
+we sample from a weighted distribution:
+\begin{align}
+P(i\rightarrow j)  &= \frac{\text{Num Replies}\ i \rightarrow j}{\sum_k \text{Num
+replies}\ i \rightarrow k}
+\end{align}
+This captures the intuition that ``deeper'', multi-commented discussions
+between two users are more important than one-off replies.
 
 \begin{table}[h]
 \begin{center}
@@ -202,33 +252,89 @@ Baseline+Weighted PageRank & \textbf{407.19} & \textbf{0.75} & \textbf{209.32} &
 \caption{Regression performance for our baseline and improved baseline models.}
 \label{tab:regression}
 \end{table}
-% Milind, if you take a pass I'll take a pass
 
-\subsection{Weighted PageRank}
-As discussed in Section~\ref{sec:baseline}, we noticed a substantial improvement
-when switching from vanilla PageRank to a weighted variant. Here, we modify
-our random walk so that instead of following outbound edges uniformly at random
-we sample from a weighted distribution:
-\begin{align}
-P(i\rightarrow j)  &= \frac{\text{Num Replies}\ i \rightarrow j}{\sum_k \text{Num
-replies}\ i \rightarrow k}
-\end{align}
-This captures the intuition that ``deeper'', multi-commented discussions
-between two users are more important than one-off replies.
+\subsection{Classification}
+
+We also model the prediction task as a classification problem, where we define a
+threshold for high karma and reputation on either website. Thus, we predict the
+probability of a user being ``famous'' or an ``expert''.
+
+For the classification task, we define a ``high karma'' user on Hacker News as
+anyone with a karma above 2500, while a user with reputation above 1000 on Super
+User is defined as ``high reputation''. These thresholds were defined
+qualitatively based on an inspection of the karma/reputation distribution
+(although we expect to formalize our choice of threshold; see
+Section~\ref{sec:next-steps}). We run a logistic regression model on our dataset,
+and plot the precision-recall and ROC curves. Figure~\ref{fig:classification}
+shows the results for classification on our enhanced feature matrix.
+
+The classification results for the datasets are partly consistent with the
+regression results, since Super User does well in this instance also (the AUC
+for the ROC curve is 0.99). On the other hand, this model does poorly on Hacker
+News (even with PageRank). While this would be true to an extent (since it
+appears that there are a lot of hidden influencers for Hacker News karma
+values), it is more likely due to a bug in the way we collect data for Hacker
+News. This is something we are working to fix immediately. In any case, we
+expect a better-shaped, but still poor, precision-recall curve for Hacker News
+karmas.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\linewidth]{classification_roc}
+\caption{ROC}
+\label{fig:roc}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+\centering
+\includegraphics[width=\linewidth]{classification_pr_curve}
+\caption{Precision-recall}
+\label{fig:pr-curve}
+\end{subfigure}
+\caption{Classification performance for our improved model with weighted Page
+Rank}
+\label{fig:classification}
+\end{figure}
 
 \section{Next steps}
-% Milind zone - cite LDA?
-Latent Dirichlet Allocation (LDA) \citep{blei2003latent}. 
+\label{sec:next-steps}
 
-Going deeper, we could combine our
-LDA-topic analysis with PageRank by performing Topic-Sensitive PageRank
-\citep{haveliwala2002topic} on our nodes and seeing if graph authority is more
-predictive of karma within certain topics. This hypothesis was validated in
-predicting following relationships on the Twitter graph in
-\citet{weng2010twitterrank}
+There are a number of immediate next steps for this project, as well as
+potential areas of investigation as mentioned in the proposal.
 
-\section{Conclusion}
-% Milind zone
+Firstly, we will focus on classification performance:
+\begin{itemize}
+  \item We will investigate whether our data collection for Hacker News is buggy,
+    and whether that explains the extremely poor classification performance.
+  \item Currently, we hard code rough thresholds for classification on karma and
+    reputation. We will study the effect of different thresholds, and formalize
+    the choice of threshold.
+\end{itemize}
+
+Secondly, we will use a more advanced set of models:
+\begin{itemize}
+  \item We will apply Latent Dirichlet Allocation (LDA) \citep{blei2003latent}
+    on the comments, posts, and replies, and determine a set of topics for
+    different communities.
+  \item Going deeper, we could combine our LDA-topic analysis with PageRank by
+    performing Topic-Sensitive PageRank \citep{haveliwala2002topic} on our nodes
+    and seeing if graph authority is more predictive of karma within certain
+    topics. This hypothesis was validated in predicting following relationships
+    on the Twitter graph in \citet{weng2010twitterrank}
+  \item We will apply some newly learnt concepts from lecture, including the
+    concept of \emph{network constraint}, to further characterize users with
+    high karma and reputation.
+\end{itemize}
+
+Finally, we will develop and test our models and intuitions on new data:
+\begin {itemize}
+  \item We will definitely use the Stack Overflow dataset, which is almost 20 times larger than the
+    Super User dataset.
+  \item We might (if time permits) attempt to run our karma prediction process
+    on non-social graphs, like the Wikipedia network, and determine ``karma''
+    values for nodes, such as articles.
+\end{itemize}
 
 \bibliographystyle{abbrvnat}
 \bibliography{milestone}
