@@ -8,7 +8,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{float}
-\newgeometry{margin=2.50cm}
+\newgeometry{margin=2.65cm}
 
 \graphicspath{{../figures/}}
 
@@ -37,7 +37,7 @@ of karma points. Using this, we build a model that predicts karma values.
 
 Our topic is motivated by the class content discussing how users evaluate
 each other in social graphs. We wish to determine whether network properties of the 
-\textit{interaction graph} can explain karma metrics. Our subsequent model for 
+\textit{interaction graph} can explain karma metrics. Our subsequent model 
 could inform a general framework for quantifying influence and credibility
 on other graphs (including those without \textit{users} as nodes).
 
@@ -73,9 +73,7 @@ with reputations of more than 2400.
 
 In this paper, we will be focusing on two relatively large internet communities:
 \textbf{Hacker News} and the \textbf{StackExchange} family of
-websites\footnote{One of our additional final report ideas, however, is to apply
-  our techniques to assign scores to entities on sites that are not social
-networks.}. On Hacker News, users submit technology-related stories as
+websites. On Hacker News, users submit technology-related stories as
 \textit{submissions} which other users use as an anchor to threaded discussions.
 A user's \textit{karma} is computed as a sum of up-votes to their stories and
 comments.  The StackExchange family of websites are question-and-answer sites
@@ -85,10 +83,10 @@ questions and answers that are accepted, and whether their comments and posts
 are voted as helpful by the community.
 
 Gathering data for Hacker News came with many challenges: there is no published
-dump of hacker news data, and no official API to help fetch. Fortunately, the creator
-of ThriftDB has created HNSearch (\url{https://www.hnsearch.com/}) as a technology
+dump of hacker news data, and no official API. Fortunately, the creator
+of ThriftDB has created HNSearch\footnote{\url{https://www.hnsearch.com/}} as a technology
 demo for his database. In addition to a public website, there is an unofficial API
-to support mechanical search queries. Although the API is limited to collecting 
+supporting search queries. Although the API is limited to collecting 
 only 100 recent items, we were able to circumvent this by constructing queries with limited
 date ranges. Over the course of a week, we extracted JSON files for every comment,
 submission and user on Hacker News by repeatedly querying the API\@. To our knowledge,
@@ -100,19 +98,17 @@ months\footnote{http://www.clearbits.net/creators/146-stack-exchange-data-dump}
 in XML format. We wrote a Python script to parse the XML data and extract
 relevant fields. Our initial emphasis is on \textbf{Super User}, which is a website where
 enthusiasts and power users users ask questions about various aspects of
-computer software and hardware. We chose this specific website because the data
-is smaller in size (the website being new relative to Stack Overflow, the first
-website on the StackExchange network). For the final report, however, we will
-also include analysis on StackOverflow data, which is included in the data dump
-and is thus trivial to process.
+computer software and hardware. We chose this website because the data
+is smaller in size since the website is new relative to Stack Overflow, the first
+website in the StackExchange network. For the final report, however, we will
+also include analysis on StackOverflow data.
 
 After collecting the raw data for both datasets, we created an SQLite database
 with normalized columns for all the fields. We also created an interaction graph
 by collecting $(\text{replier}, \text{parent poster})$ edges and then caching
 the graphs on disk as a NetworkX structure. A summary of our datasets is
-available in Table~\ref{tab:graphstats}.
-
-As a final step, we divided each dataset into train, validation and test sets at
+available in Table~\ref{tab:graphstats}. As a final step, we divided each dataset 
+into train, validation and test sets at
 a 70\%/15\%/15\% split. Our milestone results are reported on our validation
 set.
 
@@ -141,7 +137,8 @@ distributions of karma and reputations over users as shown in
 Figure~\ref{fig:karma}. As expected, both Hacker News and Super User
 distributions are well-modelled power-law variants. Using Python's
 \texttt{powerlaw} package~\cite{alstott_powerlaw:_2013} we also show fitted
-models. Both models have an $\alpha$ coefficient near 1.5 and begin near the
+models. Both models have an $\alpha$ coefficient near 1.5 and $x_{\text{min}}$
+near the
 origin. Notably, a damped power law is a better fit than a power law on our
 Hacker News distribution and the reverse is true for our Super User reputation
 distribution.  Our acting hypothesis is that Hacker News is an older community
@@ -305,7 +302,7 @@ So far, our modeling of karma has been restricted to a few simplistic baselines.
 For our final report, we anticipate coming up with a heavier, network based
 explanation for karma. We are particularly interested in investigating the concept of
 \emph{network constraint} to see if high-karma is associated with ``long-range''
-connections. Since we are dealing with reply relationships, this has a natural
+connections. Since we are dealing with textual reply relationships, this has a natural
 connection to \textit{topic modelling}. We wish to investigate whether karma
 distributions are effected by the dominant topic of a user, and whether users with
 relatively uniform topic distributions also have high karma. We can quantify
