@@ -15,6 +15,10 @@ def pagerank(graph, cache_dir=None):
 def weighted_pagerank(graph, cache_dir=None):
     return nx.pagerank(graph, weight='weight')
 
+@disk_cache("hits")
+def hits(graph, cache_dir=None):
+    return nx.hits(graph)
+
 UserSentiment = collections.namedtuple("UserSentiment", ["avg_polarity", "std_polarity",
                                                          "avg_subjectivity", "std_subjectivity",
                                                          "sentences"])
