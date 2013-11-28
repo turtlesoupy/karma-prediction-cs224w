@@ -38,6 +38,9 @@ def create_tables(conn):
     c.execute("""
     CREATE INDEX hn_comments_submission_idx ON hn_comments (hn_submission_id, parent_id)
     """)
+    c.execute("""
+    CREATE INDEX hn_comments_username_idx ON hn_comments (username);
+    """)
 
     conn.commit()
 

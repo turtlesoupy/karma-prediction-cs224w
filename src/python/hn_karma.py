@@ -3,6 +3,7 @@ import datetime
 import sqlite3
 import itertools
 import networkx as nx
+import numpy as np
 from util import auto_cursor, disk_cache
 
 @disk_cache("user_karma_distribution")
@@ -25,6 +26,12 @@ def compute_interaction_graph(c, cache_dir=None):
         graph.append((str(k), [(str(dst), num_replies) for src,dst,num_replies in g]))
 
     return graph
+
+@auto_cursor
+def yield_user_text(c):
+    q = """SELECT username, GROUP_CONCAT(text, " ") FROM hn_comments GROUP BY username"""
+    for e in c.execute(q):
+        yield e
 
 @disk_cache("nx_interaction_graph")
 @auto_cursor

@@ -6,6 +6,12 @@ import networkx as nx
 import dateutil.parser
 from util import auto_cursor, disk_cache
 
+@auto_cursor
+def yield_user_text(c):
+    q = """SELECT OwnerUserId, GROUP_CONCAT(Body, ' ') FROM posts"""
+    for e in c.execute(q):
+        yield e
+
 @disk_cache("su_nx_interaction_graph")
 @auto_cursor
 def nx_interaction_graph(c, cache_dir=None):

@@ -2,6 +2,8 @@ import collections
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
+from pattern.web import plaintext
+from pattern.en import tokenize, sentiment
 
 from util import disk_cache
 
@@ -12,6 +14,28 @@ def pagerank(graph, cache_dir=None):
 @disk_cache("weighted_pagerank")
 def weighted_pagerank(graph, cache_dir=None):
     return nx.pagerank(graph, weight='weight')
+
+UserSentiment = collections.namedtuple("UserSentiment", ["avg_polarity", "std_polarity",
+                                                         "avg_subjectivity", "std_subjectivity",
+                                                         "sentences"])
+default_user_sentiment = UserSentiment(0, 0, 0, 0, 1)
+@disk_cache("user_sentiments")
+def user_sentiments(user_generator, cache_dir=None):
+    ret = {}
+    for userkey, text in user_generator:
+        if not text or len(text) <= 0:
+            continue
+
+        sentences = tokenize(plaintext(text))
+        sentiments = [sentiment(s) for s in sentences]
+        average_polarity = np.mean([s[0] for s in sentiments])
+        std_polarity = np.std([s[0] for s in sentiments])
+        average_subjectivity = np.mean([s[1] for s in sentiments])
+        std_subjectivity = np.std([s[1] for s in sentiments])
+        us = UserSentiment(average_polarity, std_polarity, average_subjectivity, std_subjectivity, len(sentences))
+        ret[userkey] = us
+    return ret
+
 
 @disk_cache("network_stats")
 def compute_network_stats(graph):
@@ -32,6 +56,14 @@ def compute_network_stats(graph):
         "Largest WCC Fraction": largest_weakly_connected,
         "Average Karma / Reputation": average_karma,
     }
+
+def neighborhood_karma(graph, node, outbound=True):
+    karmas = []
+    it = graph.out_edges_iter if outbound else graph.in_edges_iter
+    for src, dst in it([node]):
+        neighbor = graph.node[dst if outbound else src]
+        karmas.append(neighbor.get("karma", neighbor.get("reputation", 0)))
+    return karmas
 
 def network_stats_table(*dicts):
     ret = [r"\begin{tabular}{r | %s}" % " ".join("c" for c in dicts)]
