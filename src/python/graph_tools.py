@@ -1,5 +1,6 @@
 import collections
 import matplotlib.pyplot as plt
+import math
 import networkx as nx
 import numpy as np
 from pattern.web import plaintext
@@ -19,27 +20,40 @@ def weighted_pagerank(graph, cache_dir=None):
 def hits(graph, cache_dir=None):
     return nx.hits(graph)
 
-UserSentiment = collections.namedtuple("UserSentiment", ["avg_polarity", "std_polarity",
-                                                         "avg_subjectivity", "std_subjectivity",
-                                                         "sentences"])
-default_user_sentiment = UserSentiment(0, 0, 0, 0, 1)
+Sentiment = collections.namedtuple("Sentiment", ["avg_polarity", "std_polarity",
+                                                 "avg_subjectivity", "std_subjectivity",
+                                                 "sentences"])
+default_sentiment = Sentiment(0, 0, 0, 0, 1)
+def text_sentiment(text):
+    if not text:
+        return default_sentiment
+    sentences = tokenize(plaintext(text))
+    sentiments = [sentiment(s) for s in sentences]
+    average_polarity = np.mean([s[0] for s in sentiments])
+    std_polarity = np.std([s[0] for s in sentiments])
+    average_subjectivity = np.mean([s[1] for s in sentiments])
+    std_subjectivity = np.std([s[1] for s in sentiments])
+
+    if math.isnan(average_polarity):
+        average_polarity = 0.0
+    if math.isnan(std_polarity):
+        std_polarity = 0.0
+    if math.isnan(average_subjectivity):
+        average_subjectivity = 0.0
+    if math.isnan(std_subjectivity):
+        std_subjectivity = 0.0
+
+    return Sentiment(average_polarity, std_polarity, average_subjectivity, std_subjectivity, len(sentences))
+
 @disk_cache("user_sentiments")
 def user_sentiments(user_generator, cache_dir=None):
     ret = {}
     for userkey, text in user_generator:
         if not text or len(text) <= 0:
             continue
+        ret[userkey] = text_sentiment(text)
 
-        sentences = tokenize(plaintext(text))
-        sentiments = [sentiment(s) for s in sentences]
-        average_polarity = np.mean([s[0] for s in sentiments])
-        std_polarity = np.std([s[0] for s in sentiments])
-        average_subjectivity = np.mean([s[1] for s in sentiments])
-        std_subjectivity = np.std([s[1] for s in sentiments])
-        us = UserSentiment(average_polarity, std_polarity, average_subjectivity, std_subjectivity, len(sentences))
-        ret[userkey] = us
     return ret
-
 
 @disk_cache("network_stats")
 def compute_network_stats(graph):
@@ -78,61 +92,3 @@ def network_stats_table(*dicts):
     ret.append(r"\end{tabular}")
 
     return "\n".join(ret)
-
-
-def scatterplot_matrix(data, names=[], **kwargs):
-    """
-    Plots a scatterplot matrix of subplots.  Each row of "data" is plotted
-    against other rows, resulting in a nrows by nrows grid of subplots with the
-    diagonal subplots labeled with "names".  Additional keyword arguments are
-    passed on to matplotlib's "plot" command. Returns the matplotlib figure
-    object containg the subplot grid.
-    """
-    numvars, numdata = data.shape
-    fig, axes = plt.subplots(nrows=numvars, ncols=numvars, figsize=(8,8))
-    fig.subplots_adjust(hspace=0.0, wspace=0.0)
-
-    for ax in axes.flat:
-        # Hide all ticks and labels
-        ax.xaxis.set_visible(False)
-        ax.yaxis.set_visible(False)
-
-        # Set up ticks only on one side for the "edge" subplots...
-        if ax.is_first_col():
-            ax.yaxis.set_ticks_position('left')
-        if ax.is_last_col():
-            ax.yaxis.set_ticks_position('right')
-        if ax.is_first_row():
-            ax.xaxis.set_ticks_position('top')
-        if ax.is_last_row():
-            ax.xaxis.set_ticks_position('bottom')
-
-    # Plot the data.
-    for i, j in zip(*np.triu_indices_from(axes, k=1)):
-        for x, y in [(i,j), (j,i)]:
-            # FIX #1: this needed to be changed from ...(data[x], data[y],...)
-            axes[x,y].plot(data[y], data[x], **kwargs)
-
-    # Label the diagonal subplots...
-    if not names:
-        names = ['x'+str(i) for i in range(numvars)]
-
-    for i, label in enumerate(names):
-        axes[i,i].annotate(label, (0.5, 0.5), xycoords='axes fraction',
-                ha='center', va='center')
-
-    # Turn on the proper x or y axes ticks.
-    for i, j in zip(range(numvars), itertools.cycle((-1, 0))):
-        axes[j,i].xaxis.set_visible(True)
-        axes[i,j].yaxis.set_visible(True)
-
-    # FIX #2: if numvars is odd, the bottom right corner plot doesn't have the
-    # correct axes limits, so we pull them from other axes
-    if numvars%2:
-        xlimits = axes[0,-1].get_xlim()
-        ylimits = axes[-1,0].get_ylim()
-        axes[-1,-1].set_xlim(xlimits)
-        axes[-1,-1].set_ylim(ylimits)
-
-    return fig
-
