@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import math
 import networkx as nx
 import numpy as np
+import structural_holes
 from pattern.web import plaintext
 from pattern.en import tokenize, sentiment
 
@@ -19,6 +20,10 @@ def weighted_pagerank(graph, cache_dir=None):
 @disk_cache("hits")
 def hits(graph, cache_dir=None):
     return nx.hits(graph)
+
+@disk_cache("constraint")
+def network_constraint(graph, cache_dir=None):
+    return structural_holes.structural_holes(graph)
 
 Sentiment = collections.namedtuple("Sentiment", ["avg_polarity", "std_polarity",
                                                  "avg_subjectivity", "std_subjectivity",
