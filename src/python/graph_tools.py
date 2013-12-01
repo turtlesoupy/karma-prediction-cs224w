@@ -4,6 +4,8 @@ import math
 import networkx as nx
 import numpy as np
 import structural_holes
+from igraph import Graph
+from igraph.datatypes import UniqueIdGenerator
 from pattern.web import plaintext
 from pattern.en import tokenize, sentiment
 
@@ -20,6 +22,18 @@ def weighted_pagerank(graph, cache_dir=None):
 @disk_cache("hits")
 def hits(graph, cache_dir=None):
     return nx.hits(graph)
+
+def convert_igraph(nx_graph):
+    ig = Graph(directed=True)
+    id_gen = UniqueIdGenerator()
+    for node in nx_graph.nodes():
+        id = id_gen.add(node)
+        ig.add_vertices(id)
+
+    for src_name, dst_name in nx_graph.edges():
+        ig.add_edges((id_gen[src_name], id_gen[dst_name]))
+
+    return ig, id_gen
 
 @disk_cache("constraint")
 def network_constraint(graph, cache_dir=None):

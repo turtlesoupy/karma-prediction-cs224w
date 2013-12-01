@@ -69,7 +69,7 @@ def _neighborsIndexes(graph,node,includeOutLinks,includeInLinks):
 
         return map(lambda x : graph.nodes().index(x),neighbors)
 
-def structural_holes(G,includeOutLinks=True,includeInLinks=False,wholeNetwork=True):
+def structural_holes(graph, includeOutLinks=True, includeInLinks=False, wholeNetwork=True):
         """
         Calculate each node's contraint / structural holes value, as described by Ronal Burt
 
@@ -103,9 +103,11 @@ def structural_holes(G,includeOutLinks=True,includeInLinks=False,wholeNetwork=Tr
         # get the adjacency matrix view of the graph
         # which is a numpy matrix
         A = nx.convert.to_numpy_matrix(graph)
+        print "Made adjacency matrix"
 
         # calculate P_i_j from Burt's equation
         p = _calcProportionalTieStrengths(A)
+        print "Calculated proportional ties"
 
         # this is the return value
         constraints = {}
