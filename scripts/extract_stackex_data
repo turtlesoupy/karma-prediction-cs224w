@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [[ $# -eq 0 ]]; then
+  echo "error: provide path to archives directory"
+  exit 1
+fi
+
+archives_path="$1"
+dump_path="../data/"
+
+suffix="001"
+archive_filename="${archives_path%%/}/stackoverflow.com.7z.$suffix"
+extract_dir="$(mktemp -d -t se)"
+echo "Extract files from '$archive_filename' to '$extract_dir'..."
+7z x -o$extract_dir $archive_filename
+echo "Extracting to database..."
+/usr/bin/env python extract_stackex_data.py --logfile log-$suffix.log $dump_path $extract_dir
+rm -rf $extract_dir

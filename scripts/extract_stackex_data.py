@@ -2,6 +2,7 @@ import sqlite3
 import os
 import logging
 from lxml import etree
+import argparse
 
 ANATOMY = {
     'badges': {
@@ -84,13 +85,13 @@ ANATOMY = {
 CREATE_QUERY = 'CREATE TABLE IF NOT EXISTS [{table}]({fields})'
 INSERT_QUERY = 'INSERT INTO {table} ({columns}) VALUES ({values})'
 
-def dump_tables(table_names, anatomy, dump_path, dump_database_name, log_filename='dump.log'):
+def dump_tables(table_names, anatomy, xml_path, dump_path, dump_database_name, log_filename='dump.log'):
     logging.basicConfig(filename=os.path.join(dump_path, log_filename), level=logging.INFO)
     db = sqlite3.connect(os.path.join(dump_path, dump_database_name))
 
     for table_name in table_names:
         print "Opening {0}.xml".format(table_name)
-        with open(os.path.join(dump_path, table_name + '.xml')) as xml_file:
+        with open(os.path.join(xml_path, table_name + '.xml')) as xml_file:
             tree = etree.iterparse(xml_file)
 
             sql_create = CREATE_QUERY.format(
@@ -124,4 +125,12 @@ def dump_tables(table_names, anatomy, dump_path, dump_database_name, log_filenam
     db.close()
 
 if __name__ == '__main__':
-    dump_tables(ANATOMY.keys(), ANATOMY, "/Users/mganjoo/Downloads/superuser.com", "superuser.db")
+    parser = argparse.ArgumentParser(description="Extract data from StackOverflow")
+    parser.add_argument("dump_path", help="the path to create the database and extrqact to")
+    parser.add_argument("xml_path", help="the path containing the XML files")
+    parser.add_argument("--logfile", help="log filename")
+    args = parser.parse_args()
+    if args.logfile:
+        dump_tables(ANATOMY.keys(), ANATOMY, args.xml_path, args.dump_path, "stackoverflow.db", args.logfile)
+    else:
+        dump_tables(ANATOMY.keys(), ANATOMY, args.xml_path, args.dump_path, "stackoverflow.db")
