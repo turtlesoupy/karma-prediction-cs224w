@@ -4,7 +4,9 @@ import sqlite3
 import itertools
 import networkx as nx
 import numpy as np
-from util import auto_cursor, disk_cache
+import nltk
+import codecs
+from util import auto_cursor, disk_cache, text2tokens, STOP_WORDS
 
 @disk_cache("user_karma_distribution")
 @auto_cursor
@@ -14,8 +16,20 @@ def compute_user_karma_distribution(c):
 @auto_cursor
 def yield_user_text(c):
     q = """SELECT username, GROUP_CONCAT(text, " ") FROM hn_comments GROUP BY username"""
-    for e in c.execute(q):
-        yield e
+    for user, text in c.execute(q):
+        yield (user, text or "BLANK")
+
+def write_user_text_tokens(db_path, output_file):
+    with sqlite3.connect(db_path) as conn:
+        c = conn.cursor()
+        q = """SELECT username, GROUP_CONCAT(text, " ") FROM hn_comments GROUP BY username"""
+        with codecs.open(output_file, encoding='utf-8', mode="w") as f:
+            i = 0
+            for user, text in c.execute(q):
+                f.write("%s\t%s\n" % (user, "\t".join(text2tokens(text))))
+                if i % 1000 == 0:
+                    print "Reached user %d" % i
+                i += 1
 
 @disk_cache("nx_interaction_graph")
 @auto_cursor

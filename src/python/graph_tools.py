@@ -3,10 +3,85 @@ import matplotlib.pyplot as plt
 import math
 import networkx as nx
 import numpy as np
+import codecs
+from multiprocessing import Pool
 from pattern.web import plaintext
 from pattern.en import tokenize, sentiment
 
-from util import disk_cache
+from util import auto_cursor, disk_cache, STOP_WORDS
+
+from gensim.corpora.dictionary import Dictionary
+from gensim.corpora.textcorpus import TextCorpus
+from gensim.corpora.mmcorpus import MmCorpus
+from gensim.models import LdaModel
+
+#LDA ZONE
+class UserCorpus(TextCorpus):
+    @classmethod
+    def save_corpus(cls, tokens_file, corpus_file, dictionary_path):
+        print "Instantiating corpus"
+        corpus = UserCorpus(tokens_file)
+        print "Filtering extremes"
+        corpus.dictionary.filter_extremes(no_below=20, no_above=0.1, keep_n=100000)
+        print "Serializing corpus"
+        MmCorpus.serialize(corpus_file, corpus, progress_cnt=10000)
+        print "Serializing dictionary"
+        corpus.dictionary.save_as_text(dictionary_path)
+
+    def __init__(self, tokens_file):
+        self.tokens_file = tokens_file
+        print "Creating dictionary"
+        self.dictionary = Dictionary(self.get_texts())
+
+    def get_texts(self):
+        with codecs.open(self.tokens_file, encoding="utf-8", mode="r") as f:
+            i = 0
+            for line in f:
+                tokens = line.strip().split()[1:]
+                if i % 1000 == 0:
+                    print "Reached text %d" % i
+                yield tokens
+                i += 1
+
+@disk_cache("lda")
+def run_lda(corpus_file, dictionary_path, topics=10):
+    id2word = Dictionary.load_from_text(dictionary_path)
+    mm = MmCorpus(corpus_file)
+    print mm
+    lda = LdaModel(corpus=mm, id2word=id2word, num_topics=topics, update_every=1, chunksize=1000, passes=2)
+    return lda
+
+@disk_cache("user_lda")
+def user_lda(lda, dictionary_path, textyielder):
+    id2word = Dictionary.load_from_text(dictionary_path)
+    ret = {}
+    for user, text in text_yielder():
+        bow = id2word.doc2bow(UserCorpus.text2tokens(text))
+        ret[user] = lda[bow]
+    return ret
+
+@disk_cache("lda_rank")
+def lda_rank(graph, user_lda):
+    ret = {}
+    n_topics = len(next(user_lda.itervalues()))
+
+    def pagerank_topic(i):
+        personalization_dict = {}
+        for user, lda_probs in user_lda.iteritems():
+            personalization_dict[user] = lda_probs[i]
+        pr = nx.pagerank(graph, personalization_dict=personalization_dict, weight='weight')
+        return pr
+
+    p = Pool()
+    for pr in p.map(pagerank_topic, range(n_topics)):
+        for user, pr in pr.iteritems():
+            if user not in ret:
+                ret[user] = []
+            ret[user].append(pr)
+    p.close()
+    p.terminate()
+
+    return ret
 
 @disk_cache("pagerank")
 def pagerank(graph, cache_dir=None):

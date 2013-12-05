@@ -4,7 +4,34 @@ import sqlite3
 import itertools
 import networkx as nx
 import dateutil.parser
-from util import auto_cursor, disk_cache
+from util import auto_cursor, disk_cache, STOP_WORDS
+
+from gensim.corpora.dictionary import Dictionary
+from gensim.corpora.textcorpus import TextCorpus
+from gensim.corpora.mmcorpus import MmCorpus
+
+import pattern.en
+import pattern.web
+
+class SUUserCorpus(TextCorpus):
+    @classmethod
+    def save_corpus(cls, db_path, corpus_file, dictionary_path):
+        corpus = SUUserCorpus(db_path)
+        corpus.dictionary.filter_extremes(no_below=20, no_above=0.1, keep_n=100000)
+        MmCorpus.serialize(corpus_file, progress_cnt=10000)
+        corpus.dictionary.save_as_text(dictionary_path)
+
+    def __init__(self, db_filename):
+        self.db_filename = db_filename
+        self.min_word_length = 3
+        self.max_word_length = 15
+        self.dictionary = Dictionary(self.get_texts())
+
+    def get_texts(self):
+        for user, text in yield_user_text(self.db_filename):
+            sentences = pattern.en.parse(pattern.web.plaintext(text), tags=False, chunks=False)
+            yield [token.lower() for token in itertools.chain.from_iterable(sentences)
+                if len(token) >= self.min_word_length and len(token) <= self.max_word_length and token.lower() not in STOP_WORDS]
 
 @auto_cursor
 def yield_user_text(c):
