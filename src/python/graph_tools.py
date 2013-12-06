@@ -48,7 +48,7 @@ def run_lda(corpus_file, dictionary_path, topics=10):
     id2word = Dictionary.load_from_text(dictionary_path)
     mm = MmCorpus(corpus_file)
     print mm
-    lda = LdaModel(corpus=mm, id2word=id2word, num_topics=topics, update_every=1, chunksize=1000, passes=2)
+    lda = LdaModel(corpus=mm, id2word=id2word, num_topics=topics)
     return lda
 
 @disk_cache("user_lda")
