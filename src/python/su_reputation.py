@@ -35,7 +35,7 @@ class SUUserCorpus(TextCorpus):
 
 @auto_cursor
 def yield_user_text(c):
-    q = """SELECT OwnerUserId, GROUP_CONCAT(Body, ' ') FROM posts"""
+    q = """SELECT OwnerUserId, GROUP_CONCAT(Body, ' ') FROM posts GROUP BY OwnerUserId"""
     for e in c.execute(q):
         yield e
 
