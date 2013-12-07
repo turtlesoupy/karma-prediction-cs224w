@@ -25,6 +25,21 @@ def ixs(seq): return (e[0] for e in seq)
 def ys(seq): return list(iys(seq))
 def iys(seq): return (e[1] for e in seq)
 
+def kl(p, q):
+    """Kullback-Leibler divergence D(P || Q) for discrete distributions
+
+    Parameters
+    ----------
+    p, q : array-like, dtype=float, shape=n
+        Discrete probability distributions.
+    """
+    return np.sum(np.where(p != 0, p * np.log(p / q), 0))
+
+def kl_uniform(p):
+    x, = p.shape
+    q = np.asarray([1.0 / x] * x)
+    return kl(p, q)
+
 def mkccdf(ys):
     return [1 - e for e in mkcdf(ys)]
 
