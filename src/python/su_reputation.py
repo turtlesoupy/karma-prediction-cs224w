@@ -13,31 +13,23 @@ from gensim.corpora.mmcorpus import MmCorpus
 import pattern.en
 import pattern.web
 
-class SUUserCorpus(TextCorpus):
-    @classmethod
-    def save_corpus(cls, db_path, corpus_file, dictionary_path):
-        corpus = SUUserCorpus(db_path)
-        corpus.dictionary.filter_extremes(no_below=20, no_above=0.1, keep_n=100000)
-        MmCorpus.serialize(corpus_file, progress_cnt=10000)
-        corpus.dictionary.save_as_text(dictionary_path)
-
-    def __init__(self, db_filename):
-        self.db_filename = db_filename
-        self.min_word_length = 3
-        self.max_word_length = 15
-        self.dictionary = Dictionary(self.get_texts())
-
-    def get_texts(self):
-        for user, text in yield_user_text(self.db_filename):
-            sentences = pattern.en.parse(pattern.web.plaintext(text), tags=False, chunks=False)
-            yield [token.lower() for token in itertools.chain.from_iterable(sentences)
-                if len(token) >= self.min_word_length and len(token) <= self.max_word_length and token.lower() not in STOP_WORDS]
-
 @auto_cursor
 def yield_user_text(c):
     q = """SELECT OwnerUserId, GROUP_CONCAT(Body, ' ') FROM posts GROUP BY OwnerUserId"""
     for e in c.execute(q):
         yield e
+
+def write_user_text_tokens(db_path, output_file):
+    with sqlite3.connect(db_path) as conn:
+        c = conn.cursor()
+        q = """SELECT OwnerUserId, GROUP_CONCAT(Body, ' ') FROM posts GROUP BY OwnerUserId"""
+        with codecs.open(output_file, encoding='utf-8', mode="w") as f:
+            i = 0
+            for user, text in c.execute(q):
+                f.write("%s\t%s\n" % (user, "\t".join(text2tokens(text))))
+                if i % 1000 == 0:
+                    print "Reached user %d" % i
+                i += 1
 
 @disk_cache("su_nx_interaction_graph")
 @auto_cursor
