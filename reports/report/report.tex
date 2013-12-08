@@ -249,7 +249,65 @@ further away (near zero closeness for most values).
 
 \subsection{Textual Features}
 % LDA, Sentiment, etc.
+Beyond weight, each edge in our interaction graphs are augmented with the
+\textit{text} corresponding to the reply that was made. One would expect 
+text (i.e.\ insightful replies and helpful answers) to play the largest role 
+in influence and karma. As we'll see below, this isn't necessarily the case.
 
+
+\subsubsection{Sentiment Analysis}
+\label{sec:sentiment}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{text_polarity}
+\caption{Sentiment scatter plot against karma / reputation}
+\label{fig:sentiment}
+\end{figure}
+
+Figure~\ref{fig:sentiment} shows a scatter plot comparing user karma
+against user sentiment. We compute user sentiment concatinating all
+their replies together and running Python's pattern module \citet{de2012pattern}, 
+which implements sentiment classification using a fixed sentiment lexicon.  Both
+Hacker News and SuperUser have a slight positive bias (mean polarity of 0.11 and
+0.07 respectively). Plotted on a log scale, we see a linear envelope enclosing
+the means. As such, while polarity is not linearly correlated with karma,
+\textit{it pays to toe the line}: there are no examples of extremely high karma
+users that have large polarity deviations. Furthermore, all examples of
+highly-biased users occur towards the lower end of the spectrum. Although
+sentiment analysis is never perfect, it provides a quick way of ruling out users
+as being big influencers.
+
+\subsubsection{Topic Modelling}
+Another axis of textual analysis is clustering the content of posts in terms of
+broad categories or topics. To this end, we performed Latent Dirichlet
+Allocation (LDA) \cite{blei2003latent} across user text. We wished to answer two
+questions: \textit{are there different karma models across different topics?}
+and \textit{are broader knowledge bases associated with higher karma?}
+
+To answer our first question, we examined the measure of average expected karma,
+which we defined per topic $t$ as
+\begin{align*}
+AEK_t = \frac{1}{n} \sum_{\text{node} i}^n P_t(i) * \text{Karma}(i)
+\end{align*}
+
+%More stuff here
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{lda_kl}
+\caption{User text KL-Divergence with uniform distribution Vs. Karma}
+\label{fig:lda_kl}
+\end{figure}
+
+In Figure~\ref{fig:lda_kl}, we try to measure whether having a broad knowledge
+base is associated with higher karma. To this end, compare the KL-divergence of
+a user's topic distribution with that of the uniform distribution and plot it
+against reputation/karma. Plotted on a log scale we see a similar ``bow''
+pattern between the two networks, showing a wide variance in KL-divergence 
+with a trend downwards for high reputation. Although our evidence is much weaker
+than that of sentiment in Section~\ref{sec:sentiment}, this pattern shows that
+``important people'' in the communities tend to have broad knowledge bases which
+we can exploit when trying to classify people.
 
 \section{Evaluation}
 %Summary table would go here
