@@ -13,6 +13,8 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 \setlength\titlebox{3.8cm}    % Expanding the titlebox
 
+\graphicspath{{../figures/}}
+
 \title{{\small CS224W Final Project} \\ What is karma? Quantifying online influence and credibility}
 \author{Thomas Dimson \\
   {\tt tdimson@cs.stanford.edu}
@@ -132,9 +134,43 @@ Largest WCC Fraction & 63\% & 46\% \\
 \end{table*}
 
 \section{Model and Features}
+Below we describe the karma and reputation distributions for both networks.
+After establishing the nature of the data, we investigate the association 
+between a number of features and karma/reputation. 
 
 \subsection{Karma Distribution}
 % Power law plots, etc.
+
+\subsection{Karma Cliques and Preferential Attachment}
+One model that seems intuitive is that high reputation users
+tend to attach to other high reputation users, forming so-called
+\textit{karma cliques}. We initially tested this hypothesis by
+logarithmatically-bucketing karma/reputation and computing 
+\citet{newman2003mixing}'s assortiativity over karma levels. This yields
+relatively low assortiativity of $0.015$ and $0.040$ on Hacker News
+and SuperUser respectively. As such, we see \textit{no evidence} of 
+preferntial attachment on either network.
+
+Beyond correlations, Figure~\ref{fig:karma_cliques}
+shows a scatter plot of the average of neighboring karma. In both networks,
+the mean average neighboring karma remains relatively constant at all
+karma levels, although the variance shrinks as karma increases.
+Super User's plot is dramatically different than Hacker News. While there is
+no discernable pattern based on the anchor node's karma, there is a noticable
+clustering between looking at inbound reputation and outbound reputation. We see
+that the inbound reputation (people answering this post) tends to be much higher
+than the outbound karma (the questioner's karma). This suggests two distinct
+roles on SuperUser: the questioners and the answers. Hacker News does not
+appear to have this distinction.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{karma_cliques}
+\caption{Scatter plot of average neighbor karma against the anchor node's karma. 
+The lines represent the mean average neighbor karma at a given karma level.
+Neighbor karma variance appears to shrink with larger anchor karma values.}
+\label{fig:karma_cliques}
+\end{figure*}
 
 \subsection{Node Features}
 % Time spent on the site, etc.
