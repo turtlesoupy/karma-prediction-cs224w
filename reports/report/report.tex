@@ -142,6 +142,7 @@ between a number of features and karma/reputation.
 % Power law plots, etc.
 
 \subsection{Karma Cliques and Preferential Attachment}
+\label{sec:karma_cliques}
 One model that seems intuitive is that high reputation users
 tend to attach to other high reputation users, forming so-called
 \textit{karma cliques}. We initially tested this hypothesis by
@@ -184,9 +185,67 @@ between Hacker News and SuperUser.}
 \subsection{Node Features}
 % Time spent on the site, etc.
 
-\subsection{Graph Features}
-
+\subsection{Network Features}
 % PageRank, Constraint, HITS, etc. This should be most of it
+
+\subsubsection{Centrality}
+By definition, centrality measures correspond to a node's importance in the
+graph and it is natural to assume that karma and reputation are proxies for
+importance. In our analysis we looked at degree centrality, variants of
+PageRank~\ref{page1999pagerank}, Hubs and
+Authorities (HITS)~\ref{kleinberg1999authoritative}, betweenness and 
+closeness. As we will see, our most (linearly) predictive features 
+correspond to centrality in network-specific ways. 
+
+Our analysis of Hacker News supports a blunt hypothesis: members of the Hacker
+News community are \textit{contributors}, and contributions come in the form of
+replying and receiving replies equally. In fact, the correlation coefficient 
+between out-degree (number of posts) and in-degree is $0.995$. We then ask
+\textit{are all contributors are equal?}. To answer this, we ran two variants of PageRank: 
+vanilla and a version where transition probability is proportional 
+to the number of replies. Our weighted variant is our most linearly predictive
+feature for karma ($\rho = 0.85$ Vs. $\rho=0.79$ vanilla).
+Figure~\ref{fig:correlation} shows that with the exception
+of closeness, other centrality measures are highly correlated with karma.
+Our hub score correlation is slightly lower than authority score which suggests
+a slight bias for high quality content over replying to other quality
+contributors.
+
+Centrality measures on SuperUser further support the evidence of distinct
+``questioner'' and ``answerer'' roles noted in Section~\ref{sec:karma_cliques}.
+Unlike Hacker News, Figure~\ref{fig:correlation}, shows no clear linear
+correlations between our centrality measures. In particular, PageRank and
+authority scores do not correlate at all to reputation. In contrast, a user's
+in-degree and hub is directly related. We constructed the SuperUser graph as
+directed edges between answerer and poster which suggest that on SuperUser
+\textit{it doesn't matter who answers you, it matters whether you answer others}.
+
+Although betweenness also appears to play a role on SuperUser, we see that
+both hub score and betweeneness both correlate with the out-degree of nodes.
+We believe this is because the weak component structure outlined in 
+Table~\ref{tab:graphstats}. Obviously, more shortest path will pass through a
+node of high out-degree in a network that is primarily weakly connected.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{closeness}
+\caption{Closeness distribution in both networks}
+\label{fig:closeness}
+\end{figure}
+
+%Milind, can you add something here? I'm running out of stuff to say
+Figure~\ref{fig:closeness} shows a closeness histogram between the two networks.
+Although not particularly predictive of karma or reputation, the closeness
+centrality distribution is similar in both networks. For Hacker News, it appears
+that nodes are closer together in terms of shortest paths (closeness between
+$0.3$ and $0.4$ for the majority of values), while on SuperUser nodes are
+further away (near zero closeness for most values).
+
+
+\subsubsection{Strength of Weak Ties}
+%Milind, can you handle this section? It looks like there is some interesting
+%non-linear stuff going on here but I don't fully understand network constraint
+
 
 \subsection{Textual Features}
 % LDA, Sentiment, etc.
