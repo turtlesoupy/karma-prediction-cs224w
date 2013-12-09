@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{float}
+\usepackage{multicol}
 \newgeometry{margin=2.85cm}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \setlength\titlebox{3.8cm}    % Expanding the titlebox
@@ -343,13 +344,52 @@ Unfortunately, PageRank vectors were highly correlated with each other and not
 with karma.
 
 \section{Evaluation}
-%Summary table would go here
+
+\begin{table*}
+\centering
+\begin{tabular}{|r| l l l | l l l|}
+\hline
+      & \multicolumn{3}{c |}{\textit{Hacker News}} & \multicolumn{3}{c|}{\textit{SuperUser}}  \\
+\textbf{Model} & \textbf{AUC} & \textbf{RMSE} & $\textbf{R}^2$ &
+\textbf{AUC} & \textbf{RMSE} & $\textbf{R}^2$ \\
+\hline
+Baseline & 0.63  & 563.17 & 0.55 & 0.77 & 187.35 & 0.96 \\
+Weighted PageRank & 0.72  & 485.44 & 0.67 & 0.75 & 185.26  & 0.97 \\
+HITS & 0.71 & 505.69 & 0.638 & 0.76 & 185.47 & 0.97 \\
+Constraint & 0.72 & 562.63 & 0.55 & 0.73 & 187.17 & 0.96 \\
+Textual & 0.70 & 561.79 & 0.55 & 0.74 & 187.32 & 0.96 \\
+All Features & \textbf{0.77} & \textbf{469.9} (RF) & \textbf{0.69} (RF) &
+\textbf{0.82} & \textbf{185.04} & \textbf{0.97} \\
+\hline
+\end{tabular}
+
+\caption{Evaluation results for regression and ``famous'' classification for
+various feature combinations. AUC is the area under the precision/recall curve
+for the high karma/reputation prediction task.
+Except where specified, classification results use a Random Forest classifier
+while regression uses ordinary least squares.}
+\label{tab:eval}
+
+\end{table*}
 
 \subsection{High-karma Prediction}
-% ROC curves
+% Needs expansion
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{classification_pr_curve}
+\caption{Precision/Recall Curve for our best high-karma classifiers}
+\label{fig:classification}
+\end{figure}
 
-\subsection{Karma regression}
-% Divided into section
+
+\subsection{Regression}
+% Needs expansion
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{residuals}
+\caption{Log-log plot of predicted Vs.\ actual karma/reputation values}
+\label{fig:residuals}
+\end{figure}
 
 \section{Conclusion}
 
