@@ -31,6 +31,17 @@ def write_user_text_tokens(db_path, output_file):
                     print "Reached user %d" % i
                 i += 1
 
+@disk_cache("hn_user_active_time")
+@auto_cursor
+def user_active_time(c, cache_dir=None):
+    q = """SELECT hn_users.username, hn_users.join_date AS start_time, coalesce(MAX(hn_comments.create_date), hn_users.join_date) AS inactive_time
+            FROM hn_users LEFT OUTER JOIN hn_comments ON hn_comments.username=hn_users.username
+            GROUP BY hn_users.username
+    """
+
+    return {e[0]: e[2] - e[1] for e in c.execute(q)}
+
+
 @disk_cache("nx_interaction_graph")
 @auto_cursor
 def nx_interaction_graph(c):

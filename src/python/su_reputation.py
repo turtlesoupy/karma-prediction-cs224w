@@ -31,6 +31,17 @@ def write_user_text_tokens(db_path, output_file):
                     print "Reached user %d" % i
                 i += 1
 
+@disk_cache("su_user_active_time")
+@auto_cursor
+def user_active_time(c, cache_dir=None):
+    q = """SELECT users.Id, users.CreationDate, COALESCE(MAX(posts.CreationDate), users.CreationDate)
+           FROM users LEFT OUTER JOIN posts ON posts.OwnerUserId=users.Id
+           GROUP BY users.Id
+    """
+
+    return {e[0]: (dateutil.parser.parse(e[2]) - dateutil.parser.parse(e[1])).total_seconds()
+                   for e in c.execute(q)}
+
 @disk_cache("su_nx_interaction_graph")
 @auto_cursor
 def nx_interaction_graph(c, cache_dir=None):

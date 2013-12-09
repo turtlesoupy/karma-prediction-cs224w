@@ -281,16 +281,8 @@ as being big influencers.
 Another axis of textual analysis is clustering the content of posts in terms of
 broad categories or topics. To this end, we performed Latent Dirichlet
 Allocation (LDA) \cite{blei2003latent} across user text. We wished to answer two
-questions: \textit{are there different karma models across different topics?}
-and \textit{are broader knowledge bases associated with higher karma?}
-
-To answer our first question, we examined the measure of average expected karma,
-which we defined per topic $t$ as
-\begin{align*}
-AEK_t = \frac{1}{n} \sum_{\text{node} i}^n P_t(i) * \text{Karma}(i)
-\end{align*}
-
-%More stuff here
+questions: \textit{are broader knowledge bases associated with higher karma?} and
+\textit{are there different karma models across different topics?}
 
 \begin{figure}[h]
 \centering
@@ -308,6 +300,41 @@ with a trend downwards for high reputation. Although our evidence is much weaker
 than that of sentiment in Section~\ref{sec:sentiment}, this pattern shows that
 ``important people'' in the communities tend to have broad knowledge bases which
 we can exploit when trying to classify people.
+
+
+The variance in KL-divergences of Figure~\ref{fig:lda_kl} suggests that there
+are different karma models across topics. As a coarse method of evaluation, 
+we examined the measure of average expected karma, which we defined per topic 
+$t$ as
+\begin{align*}
+AEK_t = \frac{1}{n} \sum_{\text{node} i}^n P_t(i) * \text{Karma}(i)
+\end{align*}
+
+Per-topic, these measures can be compared with a baseline uniform average
+expected karma (15 for hacker news and 8 for SuperUser). For SuperUser, we
+notice a wide variance in the expected reputation across topics: the AEK lies in
+the interval $[2.4, 13.3]$ depending on the topic. The lowest AEK values come
+with topic 2 (2.4 AEK), associated with words such as \textit{column, excel cell, table
+and formula} and topic 7 (3.5 AEK) associated with words such as \textit{router,
+wireless, address, connected}. We can contrast this to the largest AEK value with topic 8
+(13.3 AEK) associated with words such as \textit{memory, support, number,
+process, performance and hardware}. Thus, on SuperUser more reputation mass is
+associated with answering certain classes of problems: people tend to reward 
+performance tips more than Microsoft Excel tips. Since the site bills itself for
+``power users'', this matches our intuition for subjects on the site.
+
+The Hacker News view of topic is less dramatic than SuperUser with values lying
+on the interval $[10.4, 23.2]$. Here, the lowest topic (number 3 at 10.4
+AEK) is associated with words such as \textit{energy, english, countries,
+europe, water}. The highest topic (number 0 at 23.2 AEK) is associated with
+words such as \textit{startups, customer, marketing, revenue, founders}. As
+the Hacker News originated with a startup incubator this matchup seems to make
+intuitive sense: more karma mass lies in topics central to the site.
+
+In addition to having different karma models, we tried running a variant of
+PageRank that walks the random graph according to LDA probabilities.
+Unfortunately, PageRank vectors were highly correlated with each other and not
+with karma.
 
 \section{Evaluation}
 %Summary table would go here
