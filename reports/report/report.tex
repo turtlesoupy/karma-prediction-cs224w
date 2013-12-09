@@ -414,10 +414,13 @@ while regression uses ordinary least squares.}
 \end{figure}
 
 In our famous prediction task, we determine how well we can predict users that
-in the ``top 2.5\%'' (have more karma than 97.5\% of others).
-evaluate how well we can identify users above the threshold. This sets our
-thresholds to 1308 and 350 for Hacker News and SuperUser respectively. To
-capture non-lienarities in the data we use a random forest classifier and
+pass a certain threshold of karma. Our power law distributions 
+in Figure~\ref{fig:powerlaws} suggest that we will have infinite moments, so we
+chose to set a threshold based on the ``top 2.5\%'' of users 
+(have more karma than 97.5\% of others) instead of looking at standard
+deviations. This corresponds to thresholds set 1308 and 350 for 
+Hacker News and SuperUser respectively. 
+To capture non-lienarities in the data we use a random forest classifier and
 evaluate our performance by the area under precision/recall curve.
 
 We use a baseline model taken from \citet{movshovitzanalysis}, attempting to
