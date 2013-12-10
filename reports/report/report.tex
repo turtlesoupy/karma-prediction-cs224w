@@ -169,8 +169,8 @@ One model that seems intuitive is that high reputation users
 tend to attach to other high reputation users, forming so-called
 \textit{karma cliques}. We initially tested this hypothesis by
 logarithmatically-bucketing karma/reputation and computing 
-\citet{newman2003mixing}'s assortiativity over karma levels. This yields
-relatively low assortiativity of $0.015$ and $0.040$ on Hacker News
+\citet{newman2003mixing}'s assortativity over karma levels. This yields
+relatively low assortativity of $0.015$ and $0.040$ on Hacker News
 and SuperUser respectively. 
 
 Beyond correlations, Figure~\ref{fig:karma_cliques}
@@ -185,7 +185,7 @@ than the outbound karma (the questioner's karma). This suggests two distinct
 roles on SuperUser: the questioners and the answers. Hacker News does not
 appear to have this distinction.
 
-Based on our plots and our relatively low assortiativity score between karma, we
+Based on our plots and our relatively low assortativity score between karma, we
 so \textit{no evidence of preferential attachment} between similar-karma nodes
 on either network.
 
@@ -427,7 +427,7 @@ in Figure~\ref{fig:powerlaws} suggest that we will have infinite moments, so we
 chose to set a threshold based on the ``top 2.5\%'' of users 
 (have more karma than 97.5\% of others) instead of looking at standard
 deviations. This corresponds to thresholds set 1308 and 350 for 
-Hacker News and SuperUser respectively. 
+Hacker News and SuperUser respectively.
 To capture non-lienarities in the data we use a random forest classifier and
 evaluate our performance by the area under precision/recall curve.
 
@@ -437,8 +437,24 @@ of posts they've made. As Table~\ref{tab:eval} shows, the performance on both
 datasets is quite respectable: we can get up to 63\% AUC on HN and 75\% AUC on
 SU by looking at just these features.
 
-% Milind, can you expand on this? We just need a bit of description of the table
-% We could also do error analysis to see wtf is up
+We selectively added different classes of features to our model to compare
+classification performance. The Weighted PageRank and HITS scores gave the
+largest increase over the baseline for the Hacker News website, underscoring the
+focus on interaction with multiple users in gathering karma.  With the
+combination of PageRank, HITS, centrality and textual features, we achieved more
+than 10\% increase in AUC on Hacker News.
+
+On the other, most measures lowered classification scores on Super User, which
+further confirms our hypothesis that reputation on Super User is mostly
+determined by quantity of answers, not one's authoritativeness or involvement
+with the community.
+
+The conclusion we make from this analysis, then, is that question-answering
+websites rely less on a sense of community in determining reputation, and that
+simpler, direct measures of contribution volume are better indicators of whether
+a user will become ``famous''.
+
+% TODO: why is Super user cumulative performance high? No idea..
 
 \subsection{Karma/Reputation Regression}
 \label{sec:regression}
