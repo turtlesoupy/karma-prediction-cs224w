@@ -160,8 +160,8 @@ between a number of features and karma/reputation.
 \end{figure*}
 
 Figure~\ref{fig:powerlaws} shows a fitted power law distribution for our
-reputation and karma distributions.
-% Needs expansion - milind?
+reputation and karma distributions. We see that we get an especially good fit on
+a damped power law.
 
 \subsection{Karma Cliques and Preferential Attachment}
 \label{sec:karma_cliques}
@@ -202,7 +202,7 @@ Neighbor karma variance appears to shrink with larger anchor karma values.}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{correlation}
-\caption{Pearson's corrrelation coefficient matrix for some of our features.
+\caption{Pearson's correlation coefficient matrix for some of our features.
 Notice the dramatic difference in the types correlations when switching
 between Hacker News and SuperUser.}
 \label{fig:correlation}
@@ -250,7 +250,7 @@ directed edges between answerer and poster which suggest that on SuperUser
 Although betweenness also appears to play a role on SuperUser, we see that
 both hub score and betweeneness both correlate with the out-degree of nodes.
 We believe this is because the weak component structure outlined in 
-Table~\ref{tab:graphstats}. Obviously, more shortest path will pass through a
+Table~\ref{tab:graphstats}. Obviously, more shortest paths will pass through a
 node of high out-degree in a network that is primarily weakly connected.
 
 \begin{figure}[h]
@@ -260,19 +260,29 @@ node of high out-degree in a network that is primarily weakly connected.
 \label{fig:closeness}
 \end{figure}
 
-%Milind, can you add something here? I'm running out of stuff to say
-Figure~\ref{fig:closeness} shows a closeness histogram between the two networks.
-Although not particularly predictive of karma or reputation, the closeness
-centrality distribution is similar in both networks. For Hacker News, it appears
-that nodes are closer together in terms of shortest paths (closeness between
-$0.3$ and $0.4$ for the majority of values), while on SuperUser nodes are
-further away (near zero closeness for most values).
+Figure~\ref{fig:closeness} shows a histogram of another measure of centrality --
+closeness, or the inverse of the sum of distances from a node to all other
+nodes.  Although not particularly predictive of karma or reputation, the
+closeness centrality distribution is similar in both networks. For Hacker News,
+it appears that nodes are closer together in terms of shortest paths (closeness
+between $0.3$ and $0.4$ for the majority of values), while on SuperUser nodes
+are further away (near zero closeness for most values). This appears to reflect
+the stronger sense of community on Hacker News, and the consequent ease of
+information spread as a result.
 
+\subsubsection{Network constraint}
 
-\subsubsection{Strength of Weak Ties}
-%Milind, can you handle this section? It looks like there is some interesting
-%non-linear stuff going on here but I don't fully understand network constraint
+We also compute the network constraint for each node in both networks and plot
+the constraint values against karma. We notice empirical evidence of a strong
+inverse correlation between the two for both networks, i.e that high karma and
+reputation score users have lower constraint scores. This is in line with the
+intuition that a high karma person would tend to have interactions across a
+large, disparate set of users.
 
+% TODO: Need to add correlation score of 1 / constraint vs karma
+% TODO: Should we put a correlation plot for network constraint? We haven't done
+% it for any of the others, but this is not really conveyed well by the Pearson
+% diagram.
 
 \subsection{Textual Features}
 % LDA, Sentiment, etc.
@@ -280,7 +290,6 @@ Beyond weight, each edge in our interaction graphs are augmented with the
 \textit{text} corresponding to the reply that was made. One would expect 
 text (i.e.\ insightful replies and helpful answers) to play the largest role 
 in influence and karma. As we'll see below, this isn't necessarily the case.
-
 
 \subsubsection{Sentiment Analysis}
 \label{sec:sentiment}
@@ -327,7 +336,6 @@ with a trend downwards for high reputation. Although our evidence is much weaker
 than that of sentiment in Section~\ref{sec:sentiment}, this pattern shows that
 ``important people'' in the communities tend to have broad knowledge bases which
 we can exploit when trying to classify people.
-
 
 The variance in KL-divergences of Figure~\ref{fig:lda_kl} suggests that there
 are different karma models across topics. As a coarse method of evaluation, 
