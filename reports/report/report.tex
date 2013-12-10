@@ -431,11 +431,16 @@ Table~\ref{tab:eval}.
 \textbf{AUC} & \textbf{RMSE} & $\textbf{R}^2$ \\
 \hline
 Baseline & 0.63  & 563.17 & 0.55 & 0.75 & 187.35 & 0.96 \\
-Weighted PageRank & 0.71  & 485.44 & 0.67 & 0.74 & 185.26  & 0.97 \\
-HITS & 0.71 & 505.69 & 0.638 & 0.72 & 185.47 & 0.97 \\
-Constraint & 0.69 & 562.63 & 0.55 & 0.71 & 187.17 & 0.96 \\
-Textual & 0.64 & 561.79 & 0.55 & 0.72 & 187.32 & 0.96 \\
-All Features & \textbf{0.75} & \textbf{483.1} (RF) & \textbf{0.67} (RF) &
+Weighted PageRank & \textbf{0.76} (logit)  & 484.44 & 0.67 & 0.20 & 998.87  & 0.00 \\
+HITS & 0.72 (logit) & 618.16 & 0.62 & 0.68 (logit) & 292.60  & 0.91 \\
+Constraint & 0.57 & 642.56 (RF) & 0.41 & 0.60 & 396.51 (RF) & 0.84 \\
+Textual & 0.19  & 825.36 & 0.04 & 0.51 & 987.82 & 0.01 \\
+LDA Rank & 0.75 (logit) & 502.13 & 0.64 & 0.31 & 991.31 & 0.00 \\
+
+Baseline+Constraint & 0.69 & 562.63 & 0.55 & 0.71 & 187.17 & 0.96 \\
+Baseline+Textual & 0.64 & 561.79 & 0.55 & 0.72 & 187.32 & 0.96 \\
+
+All Features & 0.75 & \textbf{483.1} (RF) & \textbf{0.67} (RF) &
 \textbf{0.78} & \textbf{184.89} & \textbf{0.97} \\
 \hline
 \end{tabular}
