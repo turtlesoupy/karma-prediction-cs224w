@@ -30,8 +30,8 @@
 
 \newcommand{\citet}[1]{\cite{#1}}
 
-
 \section{Introduction}
+
 Many online communities explicitly publicize the concept of \textit{karma} or
 \textit{reputation} for users, computed as a sum of positive votes by other members of
 the community. These explicit measures are often seen as proxies for more
@@ -39,92 +39,121 @@ intangible notions such as \textit{influence} (the ability of a member to
 persuade others) and \textit{credibility} (the trustworthiness of the user as an
 member of the community). In this paper, we describe the range of network
 characteristics, interactions, and temporal factors that affect the accumulation
-of karma points. Using this, we build a model that predicts karma values.
+of karma points. Using this, we build a model that predict karma values.
+
+For this paper, our evaluation is done on datasets that contain an explicit
+measure of karma in order to confirm our intuitions about influential network
+characteristics. However, our primary motivation in developing this model is to
+enable generalization to \textbf{private communities}, where there is no concept
+of ``voting'' for users, but where other network features can easily be
+constructed from an interaction graph.  For example, our findings can be applied
+to e-mail interaction graphs to determine a private ``karma'' score for members
+of an organization, and to subsequently identify users who have high influence
+and credibility.
 
 This paper is organized as follows: we begin in by looking at prior studies of
-interaction networks in~\ref{sec:prior}. Based on these studies, we gathered
-data from the communities of \textit{Hacker News} and \textit{SuperUser} and
-constructed interaction graphs. In Section~\ref{sec:model} we look at different
-properties of these networks and how they relate to karma and reputation. Based
-on these properties, we train classifiers in Section~\ref{sec:eval} that are able 
-to identify high-karma individuals with a high degree of accuracy.
-
-While our model is evaluated on datasets that contain an explicit
-measure of karma, we are particularly motivated by the ability of the
-model to generalize to \textbf{private} communities. For example, our findings
-can be applied to e-mail interaction graphs to determine a private ``karma'' 
-score for members of an organization.
+interaction networks in~\ref{sec:prior}. We then describe our collection of data
+from two disparate online communities: \textit{Hacker News} and
+\textit{SuperUser}, and the construction of interaction graphs. In
+Section~\ref{sec:model} we look at different properties of these networks and
+how they relate to karma and reputation. Based on these properties, we train
+classifiers in Section~\ref{sec:eval} that are able to identify high-karma
+individuals with a high degree of accuracy.
 
 \section{Prior Work}
 \label{sec:prior}
 
 Most prior literature focuses on the abstract quality of \textit{influence}.
-Both \citet{bakshy2011everyone} and \citet{cha2010measuring} define
-influence as the ability to generate cascades on the Twitter graph. The authors
-use local feature of users (e.g.\ number of followers, number of tweets,
-retweets, mentions) in order to predict the ability for users to generate
-cascades.
+Both \citet{bakshy2011everyone} and \citet{cha2010measuring} define influence as
+the ability to generate cascades on the Twitter graph. The authors use local
+feature of users (e.g.\ number of followers, number of tweets, retweets,
+mentions) in order to predict the ability for users to generate cascades.
 
-\citet{cha2010measuring} emphasizes the topic-specificity of influence -- they challenge
-the notion that there is a common set of ``influentials'' who have
+\citet{cha2010measuring} emphasizes the topic-specificity of influence -- they
+challenge the notion that there is a common set of ``influentials'' who have
 broad-reaching impact on online communities. Instead, they demonstrate that for
 many topics, such as political events, there are special interest groups like
 bloggers and politicians that see higher retweet and mention scores than the
 generally popular Twitter users.
 
 In a very recent paper, \citet{movshovitzanalysis} consider the reputation
-scheme on StackOverflow (based on upvotes and accepted answers). They 
-attempt to identify expert users based on their contribution
-patterns and use high reputation users for validation. The authors tried many 
-techniques to improve their classifier performance including PageRank and
-an SVD decomposition of their interaction graphs. Notably, they find
-that PageRank does not contribute significantly to their performance
-and use user features such as number of answers, questions and question-answer 
-rations in their final random forest model. They are
-able to achieve an Area under the Curve of 81\% when classifying users
-with reputations of more than 2400.
+scheme on StackOverflow (based on upvotes and accepted answers). They attempt to
+identify expert users based on their contribution patterns and use high
+reputation users for validation. The authors tried many techniques to improve
+their classifier performance including PageRank and an SVD decomposition of
+their interaction graphs. Notably, they find that PageRank does not contribute
+significantly to their performance and use user features such as number of
+answers, questions and question-answer rations in their final random forest
+model. They are able to achieve an Area under the Curve of 81\% when classifying
+users with reputations of more than 2400.
 
-\section{Dataset}
+\section{Datasets}
+
 In this paper, we will be focusing on two relatively large internet communities:
-\textbf{Hacker News} and the \textbf{StackExchange} family of
-websites. On Hacker News, users submit technology-related stories as
-\textit{submissions} which other users use as an anchor to threaded discussions.
-A user's \textit{karma} is computed as a sum of up-votes to their stories and
-comments.  The StackExchange family of websites are question-and-answer sites
-where a user will post a question and solicit answers from the community. A
-user's \textit{reputation} is a weighted sum based on the number of their
-questions and answers that are accepted, and whether their comments and posts
-are voted as helpful by the community.
+\textbf{Hacker News} and the \textbf{StackExchange} family of websites. On
+Hacker News, users submit technology-related stories as \textit{submissions}
+which other users use as an anchor to threaded discussions.  A user's
+\textit{karma} is computed as a sum of up-votes to their stories and comments.
+The StackExchange family of websites are question-and-answer sites where a user
+will post a question and solicit answers from the community. A user's
+\textit{reputation} is a weighted sum based on the number of their questions and
+answers that are accepted, and whether their comments and posts are voted as
+helpful by the community.
+
+Our choice of online communities was deliberate: one on hand, we have the
+\emph{discussion-focussed}, seemingly closer community of Hacker News, while on
+the other we have a large question-answering website where the primary
+motivation of participants is to \emph{get answers} to their questions. The
+contrasting nature of these two networks provides the basis for some interesting
+observations, which we describe in Section~\ref{sec:model}.
 
 Gathering data for Hacker News came with many challenges: there is no published
-dump of hacker news data, and no official API. Fortunately, the creator
-of ThriftDB has created HNSearch\footnote{\url{https://www.hnsearch.com/}} as a technology
-demo for his database. In addition to a public website, there is an unofficial API
-supporting search queries. Although the API is limited to collecting 
-only 100 recent items, we were able to circumvent this by constructing queries with limited
-date ranges. Over the course of a week, we extracted JSON files for every comment,
-submission and user on Hacker News by repeatedly querying the API\@. To our knowledge,
-ours is the only complete dump of this data available on the internet.
+dump of Hacker News data, and no official API. Fortunately, the creator of
+ThriftDB has created HNSearch\footnote{\url{https://www.hnsearch.com/}} as a
+technology demo for his database. In addition to a public website, there is an
+unofficial API supporting search queries. Although the API is limited to
+collecting only 100 recent items, we were able to circumvent this by
+constructing queries with limited date ranges. Over the course of a week, we
+extracted JSON files for every comment, submission and user on Hacker News by
+repeatedly querying the API\@. To our knowledge, ours is the only complete dump
+of this data available on the internet.
 
 Collecting data for the StackExchange family of websites was relatively easier.
 An anonymized data dump of the entire series of websites is released every three
 months\footnote{http://www.clearbits.net/creators/146-stack-exchange-data-dump}
 in XML format. We wrote a Python script to parse the XML data and extract
-relevant fields. Our initial emphasis is on \textbf{Super User}, which is a website where
-enthusiasts and power users users ask questions about various aspects of
-computer software and hardware. We chose this website because the data
-is smaller in size since the website is new relative to Stack Overflow, the first
-website in the StackExchange network. For the final report, however, we will
-also include analysis on StackOverflow data.
+relevant fields. Our initial emphasis is on \textbf{Super User}, which is a
+website where enthusiasts and power users users ask questions about various
+aspects of computer software and hardware. We chose this website because the
+data is smaller in size since the website is new relative to Stack Overflow, the
+first website in the StackExchange network. For the final report, however, we
+will also include analysis on StackOverflow data.
 
 After collecting the raw data for both datasets, we created an SQLite database
 with normalized columns for all the fields. We also created an interaction graph
 by collecting $(\text{replier}, \text{parent poster})$ edges and then caching
 the graphs on disk as a NetworkX structure. A summary of our datasets is
-available in Table~\ref{tab:graphstats}. As a final step, we divided each dataset 
-into train, validation and test sets at
-a 70\%/15\%/15\% split. Our milestone results are reported on our validation
-set.
+available in Table~\ref{tab:graphstats}. As a final step, we divided each
+dataset into train, validation and test sets at a 70\%/15\%/15\% split.
+
+\subsection{Karma distribution and statistics}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{powerlaws}
+\caption{Karma distributions in our datasets with fitted power law distributions}
+\label{fig:powerlaws}
+\end{figure*}
+
+Figure~\ref{fig:powerlaws} shows a fitted power law plot for our reputation and
+models. Both models have an $\alpha$ coefficient near 1.5 and $x_{\text{min}}$
+near the origin. Notably, a damped power law is a better fit than a power law on
+our Hacker News distribution and the reverse is true for our Super User
+reputation karma distributions. The reason for this could be that Hacker News,
+being an older community (c. 2007), has a few early adopters with incredibly
+high karma that deviate from the normal power law. On the other hand, Super User
+is relatively new (c. 2011), and comprises users that split off of the existing
+StackOverflow community, who follow a more traditional power law.
 
 \begin{table*}[t]
 \begin{center}
@@ -144,51 +173,53 @@ Largest WCC Fraction & 63\% & 46\% \\
 \label{tab:graphstats}
 \end{table*}
 
+Aligning with our karma distributions, Table~\ref{tab:graphstats} shows
+interaction graph statistics for both communities. Although they are roughly
+commensurate in users, Hacker News has an order of magnitude more edges in the
+graph due to the threaded nature of discussions. The disparity between the
+communities increases when we begin to look at strongly connected components
+(SCCs): over 40\% of Hacker News members are part of their largest SCC while
+only 3.8\% of Super User members are part of their largest SCC\@. This reflects
+the fact that members on a Q\&A site have fewer ``spanning'' conversations,
+preferring to stick to their comfort zones in both questions and answers. As a
+result, the graph structure is much looser. The largest weakly connected
+component (WCC) is an order of magnitude larger than the largest SCC on Super
+User and it suggests distinct roles of \textit{questioners} and \textit{answers}
+with relatively little overlap.
+
 \section{Model and Features}
 \label{sec:model}
-Below we describe the karma and reputation distributions for both networks.
-After establishing the nature of the data, we investigate the association 
-between a number of features and karma/reputation. 
 
-\subsection{Karma Distribution}
-% Power law plots, etc.
-\begin{figure*}[t]
-\centering
-\includegraphics[width=0.95\linewidth]{powerlaws}
-\caption{Karma distributions in our datasets with fitted power law distributions}
-\label{fig:powerlaws}
-\end{figure*}
-
-Figure~\ref{fig:powerlaws} shows a fitted power law distribution for our
-reputation and karma distributions. We see that we get an especially good fit on
-a damped power law.
+Armed with the knowledge of historical user distribution and a broad sense of
+user interaction patterns, in this section we look more closely at network
+characteristics that could serve a predictive purpose in our model. We describe
+both features that worked well and were included in the final model as well as
+features that did not perform as well as intuitively expected.
 
 \subsection{Karma Cliques and Preferential Attachment}
 \label{sec:karma_cliques}
-One model that seems intuitive is that high reputation users
-tend to attach to other high reputation users, forming so-called
-\textit{karma cliques}. We initially tested this hypothesis by
-logarithmatically-bucketing karma/reputation and computing 
-\citet{newman2003mixing}'s assortativity over karma levels. This yields
-relatively low assortativity of $0.015$ and $0.040$ on Hacker News
-and SuperUser respectively. 
 
-Beyond correlations, Figure~\ref{fig:karma_cliques}
-shows a scatter plot of the average of neighboring karma. In both networks,
-the mean average neighboring karma remains relatively constant at all
-karma levels, although the variance shrinks as karma increases.
-Super User's plot is dramatically different than Hacker News. While there is
-no discernable pattern based on the anchor node's karma, there is a noticable
-clustering between looking at inbound reputation and outbound reputation. We see
-that the inbound reputation (people answering this post) tends to be much higher
-than the outbound karma (the questioner's karma). This suggests two distinct
-roles on SuperUser: the questioners and the answers. Hacker News does not
-appear to have this distinction.
+One model that seems intuitive is that high reputation users tend to attach to
+other high reputation users, forming so-called \textit{karma cliques}. We
+initially tested this hypothesis by logarithmatically-bucketing karma/reputation
+and computing \citet{newman2003mixing}'s assortativity over karma levels. This
+yields relatively low assortativity of $0.015$ and $0.040$ on Hacker News and
+SuperUser respectively.
+
+Beyond correlations, Figure~\ref{fig:karma_cliques} shows a scatter plot of the
+average of neighboring karma. In both networks, the mean average neighboring
+karma remains relatively constant at all karma levels, although the variance
+shrinks as karma increases.  Super User's plot is dramatically different than
+Hacker News. While there is no discernable pattern based on the anchor node's
+karma, there is a noticable clustering between looking at inbound reputation and
+outbound reputation. We see that the inbound reputation (people answering this
+post) tends to be much higher than the outbound karma (the questioner's karma).
+This suggests two distinct roles on SuperUser: the questioners and the answers.
+Hacker News does not appear to have this distinction.
 
 Based on our plots and our relatively low assortativity score between karma, we
-so \textit{no evidence of preferential attachment} between similar-karma nodes
+saw \textit{no evidence of preferential attachment} between similar-karma nodes
 on either network.
-
 
 \begin{figure*}[t]
 \centering
@@ -209,34 +240,41 @@ between Hacker News and SuperUser.}
 \end{figure*}
 
 \subsection{Node Features}
-% Time spent on the site, etc.
+
+Based on intuition from \citet{movshovitzanalysis}, we construct a baseline
+feature matrix from the interaction graphs with two features: the number of
+posts (posts, replies and comments) made by a user since joining the website,
+and the length of time, in seconds, since the user joined. The authors' work
+suggests that these two features are strongly correlated to reputation on Stack
+Overflow, and we find a similar result on Super User. The importance of these
+two quantities on Hacker News, however, is less obvious (as discussed in
+Section~\ref{sec:classification}.
 
 \subsection{Network Features}
-% PageRank, Constraint, HITS, etc. This should be most of it
 
-\subsubsection{Centrality}
+\subsubsection{Centrality: PageRank, HITS, betweenness and closeness}
 \label{sec:centrality}
+
 By definition, centrality measures correspond to a node's importance in the
 graph and it is natural to assume that karma and reputation are proxies for
 importance. In our analysis we looked at degree centrality, variants of
-PageRank~\cite{page1999pagerank}, Hubs and
-Authorities (HITS)~\cite{kleinberg1999authoritative}, betweenness and 
-closeness. As we will see, our most (linearly) predictive features 
-correspond to centrality in network-specific ways. 
+PageRank~\cite{page1999pagerank}, Hubs and Authorities
+(HITS)~\cite{kleinberg1999authoritative}, betweenness and closeness. As we will
+see, our most (linearly) predictive features correspond to centrality in
+network-specific ways.
 
 Our analysis of Hacker News supports a blunt hypothesis: members of the Hacker
 News community are \textit{contributors}, and contributions come in the form of
-replying and receiving replies equally. In fact, the correlation coefficient 
+replying and receiving replies equally. In fact, the correlation coefficient
 between out-degree (number of posts) and in-degree is $0.995$. We then ask
-\textit{are all contributors are equal?}. To answer this, we ran two variants of PageRank: 
-vanilla and a version where transition probability is proportional 
-to the number of replies. Our weighted variant is our most linearly predictive
+\textit{are all contributors are equal?}. To answer this, we ran two variants of
+PageRank: vanilla and a version where transition probability is proportional to
+the number of replies. Our weighted variant is our most linearly predictive
 feature for karma ($\rho = 0.85$ Vs. $\rho=0.79$ vanilla).
-Figure~\ref{fig:correlation} shows that with the exception
-of closeness, other centrality measures are highly correlated with karma.
-Our hub score correlation is slightly lower than authority score which suggests
-a slight bias for high quality content over replying to other quality
-contributors.
+Figure~\ref{fig:correlation} shows that with the exception of closeness, other
+centrality measures are highly correlated with karma.  Our hub score correlation
+is slightly lower than authority score which suggests a slight bias for high
+quality content over replying to other quality contributors.
 
 Centrality measures on SuperUser further support the evidence of distinct
 ``questioner'' and ``answerer'' roles noted in Section~\ref{sec:karma_cliques}.
@@ -258,6 +296,7 @@ node of high out-degree in a network that is primarily weakly connected.
 \includegraphics[width=\linewidth]{closeness}
 \caption{Closeness distribution in both networks}
 \label{fig:closeness}
+
 \end{figure}
 
 Figure~\ref{fig:closeness} shows a histogram of another measure of centrality --
@@ -279,13 +318,10 @@ reputation score users have lower constraint scores. This is in line with the
 intuition that a high karma person would tend to have interactions across a
 large, disparate set of users.
 
-% TODO: Need to add correlation score of 1 / constraint vs karma
-% TODO: Should we put a correlation plot for network constraint? We haven't done
-% it for any of the others, but this is not really conveyed well by the Pearson
-% diagram.
+% TODO: Need to add correlation score of 1 / constraint vs karma and a plot
 
 \subsection{Textual Features}
-% LDA, Sentiment, etc.
+
 Beyond weight, each edge in our interaction graphs are augmented with the
 \textit{text} corresponding to the reply that was made. One would expect 
 text (i.e.\ insightful replies and helpful answers) to play the largest role 
@@ -314,11 +350,12 @@ sentiment analysis is never perfect, it provides a quick way of ruling out users
 as being big influencers.
 
 \subsubsection{Topic Modelling}
+
 Another axis of textual analysis is clustering the content of posts in terms of
 broad categories or topics. To this end, we performed Latent Dirichlet
 Allocation (LDA) \cite{blei2003latent} across user text. We wished to answer two
-questions: \textit{are broader knowledge bases associated with higher karma?} and
-\textit{are there different karma models across different topics?}
+questions: \textit{are broader knowledge bases associated with higher karma}?
+and \textit{are there different karma models across different topics}?
 
 \begin{figure}[h]
 \centering
@@ -331,16 +368,16 @@ In Figure~\ref{fig:lda_kl}, we try to measure whether having a broad knowledge
 base is associated with higher karma. To this end, compare the KL-divergence of
 a user's topic distribution with that of the uniform distribution and plot it
 against reputation/karma. Plotted on a log scale we see a similar ``bow''
-pattern between the two networks, showing a wide variance in KL-divergence 
-with a trend downwards for high reputation. Although our evidence is much weaker
-than that of sentiment in Section~\ref{sec:sentiment}, this pattern shows that
+pattern between the two networks, showing a wide variance in KL-divergence with
+a trend downwards for high reputation. Although our evidence is much weaker than
+that of sentiment in Section~\ref{sec:sentiment}, this pattern shows that
 ``important people'' in the communities tend to have broad knowledge bases which
 we can exploit when trying to classify people.
 
 The variance in KL-divergences of Figure~\ref{fig:lda_kl} suggests that there
-are different karma models across topics. As a coarse method of evaluation, 
-we examined the measure of average expected karma, which we defined per topic 
-$t$ as
+are different karma models across topics. As a coarse method of evaluation, we
+examined the measure of average expected karma, which we defined per topic $t$
+as
 \begin{align*}
 AEK_t = \frac{1}{n} \sum_{\text{node} i}^n P_t(i) * \text{Karma}(i)
 \end{align*}
@@ -349,39 +386,41 @@ Per-topic, these measures can be compared with a baseline uniform average
 expected karma (15 for hacker news and 8 for SuperUser). For SuperUser, we
 notice a wide variance in the expected reputation across topics: the AEK lies in
 the interval $[2.4, 13.3]$ depending on the topic. The lowest AEK values come
-with topic 2 (2.4 AEK), associated with words such as \textit{column, excel cell, table
-and formula} and topic 7 (3.5 AEK) associated with words such as \textit{router,
-wireless, address, connected}. We can contrast this to the largest AEK value with topic 8
-(13.3 AEK) associated with words such as \textit{memory, support, number,
-process, performance and hardware}. Thus, on SuperUser more reputation mass is
-associated with answering certain classes of problems: people tend to reward 
-performance tips more than Microsoft Excel tips. Since the site bills itself for
-``power users'', this matches our intuition for subjects on the site.
+with topic 2 (2.4 AEK), associated with words such as \textit{column, excel
+cell, table and formula} and topic 7 (3.5 AEK) associated with words such as
+\textit{router, wireless, address, connected}. We can contrast this to the
+largest AEK value with topic 8 (13.3 AEK) associated with words such as
+\textit{memory, support, number, process, performance and hardware}. Thus, on
+SuperUser more reputation mass is associated with answering certain classes of
+problems: people tend to reward performance tips more than Microsoft Excel tips.
+Since the site bills itself for ``power users'', this matches our intuition for
+subjects on the site.
 
 The Hacker News view of topic is less dramatic than SuperUser with values lying
-on the interval $[10.4, 23.2]$. Here, the lowest topic (number 3 at 10.4
-AEK) is associated with words such as \textit{energy, english, countries,
-europe, water}. The highest topic (number 0 at 23.2 AEK) is associated with
-words such as \textit{startups, customer, marketing, revenue, founders}. As
-the Hacker News originated with a startup incubator this matchup seems to make
-intuitive sense: more karma mass lies in topics central to the site.
+on the interval $[10.4, 23.2]$. Here, the lowest topic (number 3 at 10.4 AEK) is
+associated with words such as \textit{energy, english, countries, europe,
+water}. The highest topic (number 0 at 23.2 AEK) is associated with words such
+as \textit{startups, customer, marketing, revenue, founders}. As the Hacker News
+originated with a startup incubator this matchup seems to make intuitive sense:
+more karma mass lies in topics central to the site.
 
 In addition to having different karma models, we tried running a variant of
 PageRank that walks the random graph according to LDA probabilities.
 Unfortunately, PageRank vectors were highly correlated with each other and not
 with karma.
 
-\section{Evaluation}
+\section{Evaluation \& Results}
 \label{sec:eval}
+
 We evaluated our model and statistics described in Section~\ref{sec:model}
 within a \textit{karma prediction} task. Essentially, we remove the value of
-karma from our dataset and then try to reconstruct it using leftover network
+karma from our dataset and then try to reconstruct it using left-over network
 information. This allows us to validate our features and see how well they might
-generalize to networks without an explicit notion of karma. In addition to 
-determining the exact value of karma
-(Section~\ref{sec:regression}) we also identified high-karma users in our
-dataset via classification (Section~\ref{sec:classification}). Our results are
-summarized in Table~\ref{tab:eval}.
+generalize to networks without an explicit notion of karma. In addition to
+determining the exact value of karma (Section~\ref{sec:regression}) we also
+identified high-karma users in our dataset via classification
+(Section~\ref{sec:classification}). Our results are summarized in
+Table~\ref{tab:eval}.
 
 \begin{table*}
 \centering
@@ -413,7 +452,6 @@ while regression uses ordinary least squares.}
 \subsection{Famous Prediction}
 \label{sec:classification}
 
-% Needs expansion
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{classification_pr_curve}
@@ -422,20 +460,20 @@ while regression uses ordinary least squares.}
 \end{figure}
 
 In our famous prediction task, we determine how well we can predict users that
-pass a certain threshold of karma. Our power law distributions 
-in Figure~\ref{fig:powerlaws} suggest that we will have infinite moments, so we
-chose to set a threshold based on the ``top 2.5\%'' of users 
-(have more karma than 97.5\% of others) instead of looking at standard
-deviations. This corresponds to thresholds set 1308 and 350 for 
-Hacker News and SuperUser respectively.
-To capture non-lienarities in the data we use a random forest classifier and
-evaluate our performance by the area under precision/recall curve.
+pass a certain threshold of karma. Our power law distributions in
+Figure~\ref{fig:powerlaws} suggest that we will have infinite moments, so we
+chose to set a threshold based on the ``top 2.5\%'' of users (have more karma
+than 97.5\% of others) instead of looking at standard deviations. This
+corresponds to thresholds set 1308 and 350 for Hacker News and SuperUser
+respectively.  To capture non-lienarities in the data we use a random forest
+classifier and evaluate our performance by the area under precision/recall
+curve.
 
 We use a baseline model taken from \citet{movshovitzanalysis}, attempting to
-classify famouse users by the length of time they have been members and the number
-of posts they've made. As Table~\ref{tab:eval} shows, the performance on both
-datasets is quite respectable: we can get up to 63\% AUC on HN and 75\% AUC on
-SU by looking at just these features.
+classify famouse users by the length of time they have been members and the
+number of posts they've made. As Table~\ref{tab:eval} shows, the performance on
+both datasets is quite respectable: we can get up to 63\% AUC on HN and 75\% AUC
+on SU by looking at just these features.
 
 We selectively added different classes of features to our model to compare
 classification performance. The Weighted PageRank and HITS scores gave the
@@ -453,8 +491,6 @@ The conclusion we make from this analysis, then, is that question-answering
 websites rely less on a sense of community in determining reputation, and that
 simpler, direct measures of contribution volume are better indicators of whether
 a user will become ``famous''.
-
-% TODO: why is Super user cumulative performance high? No idea..
 
 \subsection{Karma/Reputation Regression}
 \label{sec:regression}
@@ -476,25 +512,37 @@ much less successful with lower-karma users.
 
 % Milind, can you expand on this a bit?
 
+\subsection{Error analysis}
+% TODO: pick a few examples of high karma users who aren't predicted properly
+% TODO: look at their submissions/comments (HN/SU), which may be more
+% indicative?
+% TODO: mention the randomness that is inherit and that bounds our performance
+% TODO: why is Super user cumulative performance high? No idea..
+
 \section{Conclusion}
-In this paper, we created a interaction network model that is able to accurately 
+
+In this paper, we created a interaction network model that is able to accurately
 identify ``famous users'' in two disparate communities: Hacker News and
 SuperUser. The network structure of these communities is quite different, with
 Hacker News having users that tie together others into a large strongly
 connected component whereas SuperUser users fall into roles of ``questioners''
 and ``answerers'' that force the graph to be more disconnected. Despite the
 differences in structure, we find that network \textit{centrality} measures are
-the strongest indicators of a node's karma or reputation. Beyond centrality and 
+the strongest indicators of a node's karma or reputation. Beyond centrality and
 almost without exception, high karma users have a large number of ``weak ties''
-(as measured by \textit{constraint}) and act as bridges between 
-different parts of the network (large \textit{betweeneness}). In additinon to
-network properties, we find that although there are some differences in karma
-models between \textit{topics} of discussion, most high-karma users have broad
+(as measured by \textit{constraint}) and act as bridges between different parts
+of the network (large \textit{betweeneness}). In additinon to network
+properties, we find that although there are some differences in karma models
+between \textit{topics} of discussion, most high-karma users have broad
 knowledge bases with neutral sentiment. 
 
-We are most excited about how these findings could apply beyond networks with an
-explicit notion of karma, and look forward to analyzing more private datasets in
-further studies.
+We recognize a certain amount of randomness inherent in voting patterns in both
+networks (scores do not depend on contribution alone), thus limiting our ability
+to describe predic karma and reputation scores to high accuracy. However, we
+think that the efficacy of centrality measures is undoubtedly useful in the
+prediction task, and the model developed here can be applied to do the broad
+prediction task in networks without an explicit notion of karma, and look
+forward to analyzing more private datasets in further studies.
 
 \bibliography{report}{} \bibliographystyle{acl2012}
 
