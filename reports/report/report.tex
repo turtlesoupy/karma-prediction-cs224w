@@ -54,7 +54,7 @@ and credibility.
 Our paper is organized as follows: we begin by describing prior studies of
 interaction networks in Section~\ref{sec:prior}. Afterwards, we discuss 
 our collection of data from two disparate online communities: 
-\textit{Hacker News} and \textit{SuperUser}, and the conversion into 
+\textit{Hacker News} and \textit{Super User}, and the conversion into 
 an interaction graph structure. In Section~\ref{sec:model} we 
 examine different properties of these networks and
 how they relate to karma and reputation. Using our results, we train
@@ -196,7 +196,7 @@ other high reputation users, forming so-called \textit{karma cliques}. We
 initially tested this hypothesis by logarithmically-bucketing karma/reputation
 and computing \citet{newman2003mixing}'s assortativity over karma levels. This
 yields relatively low assortativity of $0.015$ and $0.040$ on Hacker News and
-SuperUser respectively.
+Super User respectively.
 
 Beyond correlations, Figure~\ref{fig:karma_cliques} shows a scatter plot of the
 average neighbor karma. In both networks, the mean average neighbor
@@ -205,7 +205,7 @@ shrinks as karma increases.  Super User's plot is dramatically different than
 Hacker News: there are two distinct ``clusters'' based in inbound/outbound neighbor
 karma. We see that the inbound reputation (people answering this
 post) tends to be much higher than the outbound karma (the questioner's karma).
-This suggests two distinct roles on SuperUser: the questioners and the answers.
+This suggests two distinct roles on Super User: the questioners and the answers.
 Hacker News does not appear to have this distinction.
 
 Based on our plots and our relatively low assortativity score between karma, we
@@ -229,7 +229,7 @@ Neighbor karma variance appears to shrink with larger anchor karma values.}
 \includegraphics[width=\linewidth]{correlation-png}
 \caption{Pearson's correlation coefficient matrix for some of our features.
 Notice the dramatic difference in correlations when switching between 
-Hacker News and SuperUser.}
+Hacker News and Super User.}
 \label{fig:correlation}
 \end{figure*}
 Based on intuition from \citet{movshovitzanalysis}, we construct a baseline
@@ -266,16 +266,16 @@ centrality measures are highly correlated with karma on Hacker News.
 Our hub score correlation is slightly lower than authority score and suggests 
 a slight bias for high quality content over replying to other contributors.
 
-Centrality measures on SuperUser further support the evidence distinct
+Centrality measures on Super User further support the evidence distinct
 ``questioner'' and ``answerer'' roles noted in Section~\ref{sec:karma_cliques}.
 Unlike Hacker News, Figure~\ref{fig:correlation}, shows no clear linear
 correlations between our centrality measures. In particular, PageRank and
 authority scores do not correlate at all to reputation. In contrast,  in-degree 
 and hub score are directly related to reputation. Since edges are directed from answerer
-to poster, it seems that on SuperUser
+to poster, it seems that on Super User
 \textit{it doesn't matter who answers you, it matters whether you answer others}.
 
-Although betweenness also appears to play a role on SuperUser, we see that
+Although betweenness also appears to play a role on Super User, we see that
 both hub score and betweenness both correlate with the out-degree of nodes.
 We believe this is because the weak component structure outlined in 
 Table~\ref{tab:graphstats}. Obviously, more shortest paths will pass through a
@@ -292,7 +292,7 @@ node of high out-degree in a network that is primarily weakly connected.
 Figure~\ref{fig:closeness} shows a histogram of another measure of centrality --
 closeness, or the inverse of the sum of distances from a node to all other
 nodes. For Hacker News, nodes are closer together in terms of shortest paths 
-(closeness between $0.3$ and $0.4$ for the majority of values), while on SuperUser nodes
+(closeness between $0.3$ and $0.4$ for the majority of values), while on Super User nodes
 are further away (near zero closeness for most values). This appears to reflect
 the stronger sense of community on Hacker News, and the consequent ease of
 information spread as a result.
@@ -335,7 +335,7 @@ Figure~\ref{fig:sentiment} shows a scatter plot comparing user karma
 against user sentiment. We compute user sentiment by concatenating all
 their replies together and running Python's pattern module \citet{de2012pattern}, 
 which implements sentiment classification using a fixed sentiment lexicon.  Both
-Hacker News and SuperUser have a slight positive bias (mean polarity of 0.11 and
+Hacker News and Super User have a slight positive bias (mean polarity of 0.11 and
 0.07 respectively). Plotted on a log scale, we see a linear envelope enclosing
 the means. As such, while polarity is not linearly correlated with karma,
 \textit{it pays to toe the line}: there are no examples of extremely high karma
@@ -378,19 +378,19 @@ AEK_t = \frac{1}{n} \sum_{\text{node} i}^n P_t(i) * \text{Karma}(i)
 \end{align*}
 
 Per-topic, these measures can be compared with a baseline uniform average
-expected karma (15 for hacker news and 8 for SuperUser). For SuperUser, we
+expected karma (15 for hacker news and 8 for Super User). For Super User, we
 notice a wide variance in the expected reputation across topics: the AEK lies in
 the interval $[2.4, 13.3]$ depending on the topic. The lowest AEK values come
 with topic 2 (2.4 AEK), associated with words such as \textit{column, excel
 cell, table and formula}. We can contrast this to the
 largest AEK value with topic 8 (13.3 AEK) associated with words such as
 \textit{memory, support, number, process, performance and hardware}. Thus, on
-SuperUser more reputation mass is associated with answering certain classes of
+Super User more reputation mass is associated with answering certain classes of
 problems: people tend to reward performance tips more than Microsoft Excel tips.
 Since the site bills itself for ``power users'', this matches our intuition for
 subjects on the site.
 
-The Hacker News view of topic is less dramatic than SuperUser with values lying
+The Hacker News view of topic is less dramatic than Super User with values lying
 on the interval $[10.4, 23.2]$. Here, the lowest topic (number 3 at 10.4 AEK) is
 associated with words such as \textit{energy, english, countries, europe,
 water}. The highest topic (number 0 at 23.2 AEK) is associated with words such
@@ -423,7 +423,7 @@ our validation set are summarized in Table~\ref{tab:eval}.
 \centering
 \begin{tabular}{|r| l l l | l l l|}
 \hline
-      & \multicolumn{3}{c |}{\textit{Hacker News}} & \multicolumn{3}{c|}{\textit{SuperUser}}  \\
+      & \multicolumn{3}{c |}{\textit{Hacker News}} & \multicolumn{3}{c|}{\textit{Super User}}  \\
 \textbf{Model} & \textbf{AUC} & \textbf{RMSE} & $\textbf{R}^2$ &
 \textbf{AUC} & \textbf{RMSE} & $\textbf{R}^2$ \\
 \hline
@@ -466,7 +466,7 @@ pass a certain threshold of karma. Our power law distributions in
 Figure~\ref{fig:powerlaws} suggests that we will have infinite moments, so we
 chose to set a threshold based on the ``top 2.5\%'' of users (have more karma
 than 97.5\% of others) instead of looking at standard deviations. This
-corresponds to thresholds set 1308 and 350 for Hacker News and SuperUser
+corresponds to thresholds set 1308 and 350 for Hacker News and Super User
 respectively.  To capture non-linearities in the data we use a random forest
 classifier and evaluate our performance by the area under precision/recall
 curve. We also ran a logistic regression classifier to rule out some 
@@ -488,14 +488,14 @@ a logistic regression classifier on the result. Other link analysis centrality m
 appear to have similar performance, indicating that \textit{the primary indicator of karma 
 is centrality} on Hacker News.
 
-In contrast, weighted PageRank gives terrible performance on our SuperUser dataset
+In contrast, weighted PageRank gives terrible performance on our Super User dataset
 (0.20 AUC vs \. 0.97 best). As we noted in Figure~\ref{fig:correlation}, it matters
-more what kind of questions you \textit{answer} on SuperUser than those you 
+more what kind of questions you \textit{answer} on Super User than those you 
 \textit{ask}: indicating a measure the hub score would perform better than
 the authority score. Table~\ref{tab:eval} shows that HITS can boost performance
-on SuperUser up to 0.68. Still, all network analysis measures on SuperUser 
+on Super User up to 0.68. Still, all network analysis measures on Super User 
 are outperformed by looking only at our baseline of number of posts and the length
-of time. This may be an indication of SuperUser being a newer community, and the
+of time. This may be an indication of Super User being a newer community, and the
 way reputation is assigned (rewarding quantity of answers more than quality of answers).
 It seems quite plausible that reputation in the early days of a community is mostly
 distributed amongst early adopters.
@@ -508,7 +508,7 @@ This shows that it is less important to be a \textit{topic expert} than it is to
 \textit{expert}.
 
 All of our features seem to have linear and non-linear dependencies between them. When we combined
-them into a big classification model, SuperUser classification scores improved mildly (to 0.97 AUC)
+them into a big classification model, Super User classification scores improved mildly (to 0.97 AUC)
 but the Hacker News score is slightly worse than just using weighted PageRank alone. The performance
 further suggests that network centrality is the most important feature in karma.
 
@@ -598,7 +598,7 @@ Some scores are particularly interesting -- on Hacker News, we
 predict a score of 25995 for user \texttt{petercooper} with actual karma 26332 --
 a difference of 1.2\%. On the other hand, we predict a value of 6140 for user
 \texttt{nickbb}, while their actual karma is 27593. However, on closer inspection
-we find that 88.92\% of their karma score from submissions instead of
+we find that 88.92\% of their karma score comes from submissions rather than
 comments. We were unable to incorporate submissions since they do not have
 a clear mapping into an interaction graph. Overall, we observe a median difference of
 20.80\% in the Hacker News top ten. On Super User, where all reputation is earned 
@@ -610,9 +610,9 @@ difference of 27\% between predicted and actual scores.
 
 In this paper, we discuss the network factors affecting \textit{karma and reputation}
 in two disparate communities: Hacker News and
-SuperUser. The network structure of these communities is quite different, with
+Super User. The network structure of these communities is quite different, with
 Hacker News having users that tie together others into a large strongly
-connected component whereas SuperUser users fall into roles of ``questioners''
+connected component whereas Super User users fall into roles of ``questioners''
 and ``answerers'' that force the graph to be more disconnected. Despite the
 differences in structure, we find that network \textit{centrality} measures are
 the strongest indicators of a node's karma or reputation. Beyond centrality and
