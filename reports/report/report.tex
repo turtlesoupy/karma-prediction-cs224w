@@ -10,7 +10,7 @@
 \usepackage{subcaption}
 \usepackage{float}
 \usepackage{multicol}
-\newgeometry{margin=2.85cm}
+\newgeometry{margin=2.7cm}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \setlength\titlebox{3.8cm}    % Expanding the titlebox
 
@@ -172,8 +172,9 @@ communities increases when we begin to look at strongly connected components
 (SCCs): over 40\% of Hacker News members are part of their largest SCC while
 only 3.8\% of Super User members are part of their largest SCC\@. This reflects
 the fact that members on a Q\&A site have fewer ``spanning'' conversations,
-preferring to stick to their comfort zones in both questions and answers. As a
-result, the graph structure is much looser. The largest weakly connected
+preferring to stick to their comfort zones in both questions and answers (there
+are no reputation points for comments on any of the Stack Exchange websites). As
+a result, the graph structure is much looser. The largest weakly connected
 component (WCC) is an order of magnitude larger than the largest SCC on Super
 User and it suggests distinct roles of \textit{questioners} and \textit{answers}
 with relatively little overlap. We explore the consequences of the graph structure
@@ -488,7 +489,7 @@ appear to have similar performance, indicating that \textit{the primary indicato
 is centrality} on Hacker News.
 
 In contrast, weighted PageRank gives terrible performance on our SuperUser dataset
-(0.20 AUC Vs\. 0.97 best). As we noted in Figure~\ref{fig:correlation}, it matters
+(0.20 AUC vs \. 0.97 best). As we noted in Figure~\ref{fig:correlation}, it matters
 more what kind of questions you \textit{answer} on SuperUser than those you 
 \textit{ask}: indicating a measure the hub score would perform better than
 the authority score. Table~\ref{tab:eval} shows that HITS can boost performance
@@ -537,13 +538,65 @@ a linear feature - having low constraint seems to be necessary but not sufficien
 for having high karma. This is reflected in our performance: significantly better
 than random on both networks but also outperformed by other features.
 
+\subsection{Rank correlation}
 
-\subsection{Error analysis}
+While predicting reputation and karma scores for users is important, we are more
+interested in how our predictions order the set of users, since that helps to
+identify important users. We analyze the usefulness of our score predictions by
+calculating the Kendall rank correlation coefficient ($\tau$) to compare gold
+and predicted ranks. We do this for the entire set of users in the prediction
+set, as well as for only the users we categorize as ``famous'' according to our
+definition for classification. Table~\ref{tab:kendall} summarizes our findings.
+
+\begin{table}[h]
+\setlength{\tabcolsep}{2pt}
+\small
+\centering
+\begin{tabular}{|r| l l | l l |}
+\hline
+      & \multicolumn{2}{c |}{\textit{Least-squares}} &
+      \multicolumn{2}{c|}{\textit{Random forest}}  \\
+\textbf{Model - Dataset} & \textbf{All} & \textbf{Famous} &
+\textbf{All} & \textbf{Famous} \\
+\hline
+
+Baseline - HN & 0.42  & 0.31 & 0.51 & 0.28 \\
+Baseline - SU & 0.29  & 0.50 & 0.29 & 0.50 \\
+All features - HN & 0.51  & 0.36 & 0.61 & 0.35 \\
+All features - SU & 0.28  & 0.54 & 0.38 & 0.57 \\
+
+\hline
+\end{tabular}
+
+\caption{Value of Kendall rank correlation coefficient $\tau$ for combinations of model
+and dataset. We calculate the value of $\tau$ for all users, as well as
+separately for ``famous'' users only.}
+\label{tab:kendall}
+
+\end{table}
+
+From the table, we observe that we are better at ranking users when using random
+forest regression as opposed to least-squares, which is consistent with the
+analysis in Section~\ref{sec:regression} that random forests are able to take
+advantage of non-linear features like constraint better. Interestingly, we
+notice that we are better at ranking the entire set of users on Hacker News, but
+on Super User we are better at ranking the famous users. Our hypothesis is that
+on Super User, reputation only starts to differentiate itself for famous users
+(there are a lot of low reputation users who ask and answer very few questions,
+or very niche questions, and thus have relatively close scores). It is thus
+harder to get ``noticed'' on Stack Overflow unless one is focused on quantity of
+contributions. On Hacker News, where every comment on every submission is likely
+to get a certain amount of attention, we find granularity in karma values of
+less-famous users as well, making it easier to rank them.  Conversely, because
+of the tighter community structure of Hacker News, famous users are relatively
+close together in scores, and thus we find it harder to differentiate them.
+Nonetheless, we still obtain a relatively high value of $\tau$ (0.61) on the
+Hacker News dataset.
+
+\subsection{Prediction examples}
 % TODO: pick a few examples of high karma users who aren't predicted properly
 % TODO: look at their submissions/comments (HN/SU), which may be more
 % indicative?
-% TODO: mention the randomness that is inherit and that bounds our performance
-% TODO: why is Super user cumulative performance high? No idea..
 
 \section{Conclusion}
 \label{sec:conclusion}
