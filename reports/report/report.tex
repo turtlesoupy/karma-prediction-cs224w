@@ -99,42 +99,31 @@ which other users use as an anchor to threaded discussions.  A user's
 The StackExchange family of websites are question-and-answer sites where a user
 will post a question and solicit answers from the community. A user's
 \textit{reputation} is a weighted sum based on the number of their questions and
-answers that are accepted, and whether their comments and posts are voted as
-helpful by the community.
+answers that are accepted and voted helpful by the community.
 
 Our choice of online communities was deliberate: one on hand, we have the
-\emph{discussion-focussed}, seemingly closer community of Hacker News, while on
-the other we have a large question-answering website where the primary
-motivation of participants is to \emph{get answers} to their questions. The
-contrasting nature of these two networks provides the basis for some interesting
+\emph{discussion-focussed}, eccentric community of Hacker News, and on
+the other we have a focused question-answering website. The
+contrasting between the two networks provides for some interesting
 observations, which we describe in Section~\ref{sec:model}.
 
 Gathering data for Hacker News came with many challenges: there is no published
 dump of Hacker News data, and no official API. Fortunately, the creator of
 ThriftDB has created HNSearch\footnote{\url{https://www.hnsearch.com/}} as a
-technology demo for his database. In addition to a public website, there is an
-unofficial API supporting search queries. Although the API is limited to
-collecting only 100 recent items, we were able to circumvent this by
-constructing queries with limited date ranges. Over the course of a week, we
+technology demo for his database. Over the course of a week, we
 extracted JSON files for every comment, submission and user on Hacker News by
 repeatedly querying the API\@. To our knowledge, ours is the only complete dump
 of this data available on the internet.
 
-Collecting data for the StackExchange family of websites was relatively easier.
+Collecting data for the StackExchange family of websites was easier.
 An anonymized data dump of the entire series of websites is released every three
 months\footnote{http://www.clearbits.net/creators/146-stack-exchange-data-dump}
 in XML format. We wrote a Python script to parse the XML data and extract
-relevant fields. Our initial emphasis is on \textbf{Super User}, which is a
-website where enthusiasts and power users users ask questions about various
-aspects of computer software and hardware. We chose this website because the
-data is smaller in size since the website is new relative to Stack Overflow, the
-first website in the StackExchange network. For the final report, however, we
-will also include analysis on StackOverflow data.
+relevant fields. We chose to focus on \textbf{Super User} website since it
+has a managable amount of data.
 
-After collecting the raw data for both datasets, we created an SQLite database
-with normalized columns for all the fields. We also created an interaction graph
-by collecting $(\text{replier}, \text{parent poster})$ edges and then caching
-the graphs on disk as a NetworkX structure. A summary of our datasets is
+We converted our dataset into an interaction graph by 
+collecting $(\text{replier}, \text{parent poster})$. A summary of our datasets is
 available in Table~\ref{tab:graphstats}. As a final step, we divided each
 dataset into train, validation and test sets at a 70\%/15\%/15\% split.
 
@@ -188,16 +177,15 @@ result, the graph structure is much looser. The largest weakly connected
 component (WCC) is an order of magnitude larger than the largest SCC on Super
 User and it suggests distinct roles of \textit{questioners} and \textit{answers}
 with relatively little overlap. We explore the consequences of the graph structure
-differences in Section~\ref{sec:model} and during evaluation in Section~\ref{eval}.
+differences in Section~\ref{sec:model} and during evaluation in Section~\ref{sec:eval}.
 
 \section{Model and Features}
 \label{sec:model}
 
-Armed with the knowledge of historical user distribution and a broad sense of
-user interaction patterns, in this section we look more closely at network
-characteristics that could serve a predictive purpose in our model. We describe
-both features that worked well and were included in the final model as well as
-features that did not perform as well as intuitively expected.
+Armed with the knowledge of our karma distributions we look more closely at network
+characteristics that could serve for predictive purposes. We describe
+both features that worked well and those that not perform as well 
+as expected.
 
 \subsection{Karma Cliques and Preferential Attachment}
 \label{sec:karma_cliques}
@@ -210,18 +198,17 @@ yields relatively low assortativity of $0.015$ and $0.040$ on Hacker News and
 SuperUser respectively.
 
 Beyond correlations, Figure~\ref{fig:karma_cliques} shows a scatter plot of the
-average of neighboring karma. In both networks, the mean average neighboring
+average neighbor karma. In both networks, the mean average neighbor
 karma remains relatively constant at all karma levels, although the variance
 shrinks as karma increases.  Super User's plot is dramatically different than
-Hacker News. While there is no discernable pattern based on the anchor node's
-karma, there is a noticable clustering between looking at inbound reputation and
-outbound reputation. We see that the inbound reputation (people answering this
+Hacker News: there are two distinct ``clusters'' based in inbound/outbound neighbor
+karma. We see that the inbound reputation (people answering this
 post) tends to be much higher than the outbound karma (the questioner's karma).
 This suggests two distinct roles on SuperUser: the questioners and the answers.
 Hacker News does not appear to have this distinction.
 
 Based on our plots and our relatively low assortativity score between karma, we
-saw \textit{no evidence of preferential attachment} between similar-karma nodes
+saw \textit{no evidence of preferential attachment between similar-karma nodes}
 on either network.
 
 \begin{figure*}[t]
@@ -245,13 +232,12 @@ Hacker News and SuperUser.}
 \label{fig:correlation}
 \end{figure*}
 Based on intuition from \citet{movshovitzanalysis}, we construct a baseline
-feature matrix from the interaction graphs with two features: the number of
-posts (posts, replies and comments) made by a user since joining the website,
-and the length of time, in seconds, since the user joined. The authors' work
+from two features: the number of replies made by a user since joining the website,
+and the length of time since the user joined (in seconds). The authors' work
 suggests that these two features are strongly correlated to reputation on Stack
-Overflow, and we find a similar result on Super User. The importance of these
-two quantities on Hacker News, however, is less obvious (as discussed in
-Section~\ref{sec:classification}.
+Overflow, and we find a similar result on Super User. As discussed in 
+Section~\ref{sec:classification}, the baseline features seem less 
+important on Hacker News.
 
 \subsection{Network Features}
 
