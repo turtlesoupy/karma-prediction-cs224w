@@ -230,17 +230,17 @@ Neighbor karma variance appears to shrink with larger anchor karma values.}
 \label{fig:karma_cliques}
 \end{figure*}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=0.9\linewidth]{correlation-png}
-\caption{Pearson's correlation coefficient matrix for some of our features.
-Notice the dramatic difference in the types correlations when switching
-between Hacker News and SuperUser.}
-\label{fig:correlation}
-\end{figure*}
 
 \subsection{Node Features}
+\begin{figure*}[t]
+\centering
 
+\includegraphics[width=\linewidth]{correlation-png}
+\caption{Pearson's correlation coefficient matrix for some of our features.
+Notice the dramatic difference in correlations when switching between 
+Hacker News and SuperUser.}
+\label{fig:correlation}
+\end{figure*}
 Based on intuition from \citet{movshovitzanalysis}, we construct a baseline
 feature matrix from the interaction graphs with two features: the number of
 posts (posts, replies and comments) made by a user since joining the website,
@@ -310,6 +310,13 @@ the stronger sense of community on Hacker News, and the consequent ease of
 information spread as a result.
 
 \subsubsection{Network constraint}
+\label{sec:constraint}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{constraint_correlation-png}
+\caption{Scatter plot between $\frac{1}{\text{constraint}}$ and karma}
+\end{figure}
 
 We also compute the network constraint for each node in both networks and plot
 the constraint values against karma. We notice empirical evidence of a strong
@@ -387,8 +394,7 @@ expected karma (15 for hacker news and 8 for SuperUser). For SuperUser, we
 notice a wide variance in the expected reputation across topics: the AEK lies in
 the interval $[2.4, 13.3]$ depending on the topic. The lowest AEK values come
 with topic 2 (2.4 AEK), associated with words such as \textit{column, excel
-cell, table and formula} and topic 7 (3.5 AEK) associated with words such as
-\textit{router, wireless, address, connected}. We can contrast this to the
+cell, table and formula}. We can contrast this to the
 largest AEK value with topic 8 (13.3 AEK) associated with words such as
 \textit{memory, support, number, process, performance and hardware}. Thus, on
 SuperUser more reputation mass is associated with answering certain classes of
@@ -404,10 +410,14 @@ as \textit{startups, customer, marketing, revenue, founders}. As the Hacker News
 originated with a startup incubator this matchup seems to make intuitive sense:
 more karma mass lies in topics central to the site.
 
-In addition to having different karma models, we tried running a variant of
-PageRank that walks the random graph according to LDA probabilities.
-Unfortunately, PageRank vectors were highly correlated with each other and not
-with karma.
+Building on the intuition of different expected karma, we tried running a variant of 
+PageRank where the transition probability is replaced with the topic probability of 
+the reply. Intuitively, this would allow us to identify ``topic experts'' in the 
+community who have high karma. Unfortunately, the rank vectors were highly correlated
+with each other and didn't appear to provide much new information. This is a reflection 
+of the high-karma users having broad knowledge bases as identified in 
+Figure~\ref{fig:lda_kl}.
+
 
 \section{Evaluation \& Results}
 \label{sec:eval}
@@ -480,17 +490,17 @@ number of posts they've made. As Table~\ref{tab:eval} shows, the performance on
 both datasets is quite respectable: we can get up to 63\% AUC on HN and 75\% AUC
 on SU by looking at just these features.
 
-In our anaylsis, we are less interested in raw performance and more interested in 
+In our analysis, we are less interested in raw performance and more interested in 
 simple features that might generalize
 to graphs without an explicit measurement of karma. As such, we also built classifiers
 with more limited subsets of our features to determine how well they perform. Of particular note,
 we can achieve our \textit{best} famous prediction performance (0.76 AUC) 
 on Hacker News by performing PageRank on a weighted version of the graph and training
-a logistic regression classifier on the result. Other Link Analysis centrality measures 
+a logistic regression classifier on the result. Other link analysis centrality measures 
 appear to have similar performance, indicating that \textit{the primary indicator of karma 
 is centrality} on Hacker News.
 
-Contrastly, weighted PageRank gives terrible performance on our SuperUser dataset
+In contrast, weighted PageRank gives terrible performance on our SuperUser dataset
 (0.20 AUC Vs\. 0.97 best). As we noted in Figure~\ref{fig:correlation}, it matters
 more what kind of questions you \textit{answer} on SuperUser than those you 
 \textit{ask}: indicating a measure the hub score would perform better than
@@ -499,7 +509,20 @@ on SuperUser up to 0.68. Still, all network analysis measures on SuperUser
 are outperformed by looking only at our baseline of number of posts and the length
 of time. This may be an indication of SuperUser being a newer community, and the
 way reputation is assigned (rewarding quantity of answers more than quality of answers).
+It seems quite plausible that reputation in the early days of a community is mostly
+distributed amongst early adopters.
 
+When looking at textual features (sentiment, LDA) alone, our classifier does better than random 
+but not particularly well on either network (0.19 and 0.51 AUC). Remarkably, content
+seems to have less effect than the network structure around replies. Similarly, the LDA Rank model 
+described in Section~\ref{sec:eval} has similar performance to our weighted PageRank baseline. 
+This shows that it is less important to be a \textit{topic expert} than it is to be a general
+\textit{expert}.
+
+All of our features seem to have linear and non-linear dependencies between them. When we combined
+them into a big classification model, SuperUser classification scores improved mildly (to 0.97 AUC)
+but the Hacker News score is slightly worse than just using weighted PageRank alone. The performance
+further suggests that network centrality is the most important feature in karma.
 
 \subsection{Karma/Reputation Regression}
 \label{sec:regression}
@@ -512,14 +535,21 @@ way reputation is assigned (rewarding quantity of answers more than quality of a
 \end{figure}
 
 In our regression task, we attempt to predict karma values \textit{directly}
-utilizing the same dataset as used in our famous prediciton task. Our
+utilizing the same dataset as used in our famous prediction task. Our
 improvement patterns mostly match that of our classification although our scores
 (as defined by RMSE) are seemingly poor. Figure~\ref{fig:residuals} shows a plot
 of predicted karma/reputation Vs.\ actual karma/reputation. Here, we can see that
 while we are relatively successful at identifying ``famous'' individuals, we are
 much less successful with lower-karma users.
 
-% Milind, can you expand on this a bit?
+Throughout our regression task, we compared two models of regression: ordinary least
+squares  and random forest regression. Table~\ref{tab:eval} shows the performance of 
+the best classifier - typically ordinary least squares with the exception of network
+constraint. As we discussed in Section~\ref{sec:constraint}, constraint is not
+a linear feature - having low constraint seems to be necessary but not sufficient
+for having high karma. This is reflected in our performance: significantly better
+than random on both networks but also outperformed by other features.
+
 
 \subsection{Error analysis}
 % TODO: pick a few examples of high karma users who aren't predicted properly
