@@ -540,58 +540,53 @@ than random on both networks but also outperformed by other features.
 
 \subsection{Rank correlation}
 
-While predicting reputation and karma scores for users is important, we are more
-interested in how our predictions order the set of users, since that helps to
-identify important users. We analyze the usefulness of our score predictions by
-calculating the Kendall rank correlation coefficient ($\tau$) to compare gold
-and predicted ranks. We do this for the entire set of users in the prediction
-set, as well as for only the users we categorize as ``famous'' according to our
-definition for classification. Table~\ref{tab:kendall} summarizes our findings.
+In addition predicting reputation and karma scores for users we can also
+use regression to order the set of users in each network. To quantify
+our ordering, we calculating the Kendall rank correlation 
+coefficient ($\tau$) between gold and predicted ranks. Our users are split into two sets:
+all users and those that are ``famous'' in our gold set as identified in 
+Section~\ref{sec:classification}. Table~\ref{tab:kendall} summarizes our findings.
 
 \begin{table}[h]
 \setlength{\tabcolsep}{2pt}
 \small
 \centering
-\begin{tabular}{|r| l l | l l |}
+\begin{tabular}{|r| c | c | c | c |}
 \hline
       & \multicolumn{2}{c |}{\textit{Least-squares}} &
       \multicolumn{2}{c|}{\textit{Random forest}}  \\
-\textbf{Model - Dataset} & \textbf{All} & \textbf{Famous} &
+\textbf{Model} & \textbf{All} & \textbf{Famous} &
 \textbf{All} & \textbf{Famous} \\
 \hline
 
-Baseline - HN & 0.42  & 0.31 & 0.51 & 0.28 \\
-Baseline - SU & 0.29  & 0.50 & 0.29 & 0.50 \\
-All features - HN & 0.51  & 0.36 & 0.61 & 0.35 \\
-All features - SU & 0.28  & 0.54 & 0.38 & 0.57 \\
+Baseline (HN) & 0.42  & 0.31 & 0.51 & 0.28 \\
+Baseline (SU) & 0.29  & 0.50 & 0.29 & 0.50 \\
+All features (HN) & 0.51  & 0.36 & 0.61 & 0.35 \\
+All features (SU) & 0.28  & 0.54 & 0.38 & 0.57 \\
 
 \hline
 \end{tabular}
 
-\caption{Value of Kendall rank correlation coefficient $\tau$ for combinations of model
-and dataset. We calculate the value of $\tau$ for all users, as well as
-separately for ``famous'' users only.}
+\caption{Value of Kendall rank correlation coefficient $\tau$ for our models.
+We calculate the value of $\tau$ over all users and ``famous'' users separately.}
 \label{tab:kendall}
 
 \end{table}
 
-From the table, we observe that we are better at ranking users when using random
-forest regression as opposed to least-squares, which is consistent with the
-analysis in Section~\ref{sec:regression} that random forests are able to take
-advantage of non-linear features like constraint better. Interestingly, we
+According to our table, we are better at ranking users when using random
+forest regression as than to least-squares, which is consistent with the
+analysis in Section~\ref{sec:regression}. Interestingly, we
 notice that we are better at ranking the entire set of users on Hacker News, but
 on Super User we are better at ranking the famous users. Our hypothesis is that
-on Super User, reputation only starts to differentiate itself for famous users
-(there are a lot of low reputation users who ask and answer very few questions,
-or very niche questions, and thus have relatively close scores). It is thus
-harder to get ``noticed'' on Stack Overflow unless one is focused on quantity of
-contributions. On Hacker News, where every comment on every submission is likely
-to get a certain amount of attention, we find granularity in karma values of
-less-famous users as well, making it easier to rank them.  Conversely, because
+Super User's reputation only starts to differentiate itself for famous users because
+there are a lot of low reputation users who ask and answer very few questions,
+or very niche questions. So, it is
+harder to be ``noticed'' on Stack Overflow unless one without focusing on the quality
+of answers. On Hacker News, where every comment gets attention, we 
+find granularity in karma values of less-famous users as well.  Conversely, because
 of the tighter community structure of Hacker News, famous users are relatively
-close together in scores, and thus we find it harder to differentiate them.
-Nonetheless, we still obtain a relatively high value of $\tau$ (0.61) on the
-Hacker News dataset.
+close together in scores, and therefore harder to differentiate. This effect was
+observed in the exponentially damped karma distribution of Hacker News (Figure~\ref{fig:powerlaws}).
 
 \subsection{Prediction examples}
 % TODO: pick a few examples of high karma users who aren't predicted properly
