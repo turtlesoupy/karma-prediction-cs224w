@@ -589,9 +589,21 @@ close together in scores, and therefore harder to differentiate. This effect was
 observed in the exponentially damped karma distribution of Hacker News (Figure~\ref{fig:powerlaws}).
 
 \subsection{Prediction examples}
-% TODO: pick a few examples of high karma users who aren't predicted properly
-% TODO: look at their submissions/comments (HN/SU), which may be more
-% indicative?
+
+Finally, we pick the top 10 gold users and top 10 predicted users for karma and
+reputation on both networks, and empirically compare their actual scores with
+predicted scores. We observe 7 of the highest gold users on HN and 8 of the
+highest on SU were also predicted as top-10 by us.
+
+Some scores are particularly interesting -- on Hacker News, for example, we
+predict a score of 25995 for user \textt{petercooper} with actual karma 26332 --
+a difference of 1.2\%. On the other hand, we predict a value of 6140 for user
+\textt{nickbb}, while their actual karma is 27593. However, on closer inspection
+we find that 90\% of their karma actually comes from submissions instead of
+comments, which is something we do not use in our prediction task since it does
+not yield a suitable interaction graph. On Super User, where 100\% of one's
+reputation is earned through questions and answers, we observe a median
+difference of 27\% between predicted and actual scores.
 
 \section{Conclusion}
 \label{sec:conclusion}
