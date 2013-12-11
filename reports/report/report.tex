@@ -39,26 +39,28 @@ intangible notions such as \textit{influence} (the ability of a member to
 persuade others) and \textit{credibility} (the trustworthiness of the user as an
 member of the community). In this paper, we describe the range of network
 characteristics, interactions, and temporal factors that affect the accumulation
-of karma points. Using this, we build a model that predict karma values.
+of karma points. 
 
-For this paper, our evaluation is done on datasets that contain an explicit
-measure of karma in order to confirm our intuitions about influential network
-characteristics. However, our primary motivation in developing this model is to
-enable generalization to \textbf{private communities}, where there is no concept
-of ``voting'' for users, but where other network features can easily be
-constructed from an interaction graph.  For example, our findings can be applied
-to e-mail interaction graphs to determine a private ``karma'' score for members
+In order to confirm our intuitions about influential network chracateristics, 
+we evaluate our features on datasets that contain an explicit
+measure of karma. However, our primary motivation in developing a model that
+enables generalization to \textbf{private communities} without a concept
+of ``voting'' for users but with an implied network structure. For example, 
+our findings can be applied to e-mail interaction graphs to 
+determine a private ``karma'' score for members
 of an organization, and to subsequently identify users who have high influence
 and credibility.
 
-This paper is organized as follows: we begin in by looking at prior studies of
-interaction networks in~\ref{sec:prior}. We then describe our collection of data
-from two disparate online communities: \textit{Hacker News} and
-\textit{SuperUser}, and the construction of interaction graphs. In
-Section~\ref{sec:model} we look at different properties of these networks and
-how they relate to karma and reputation. Based on these properties, we train
+Our paper is organized as follows: we begin by describing prior studies of
+interaction networks in Section~\ref{sec:prior}. Afterwards, we discuss 
+our collection of data from two disparate online communities: 
+\textit{Hacker News} and \textit{SuperUser}, and the conversion into 
+an interaction graph structure. In Section~\ref{sec:model} we 
+examine different properties of these networks and
+how they relate to karma and reputation. Using our results, we train
 classifiers in Section~\ref{sec:eval} that are able to identify high-karma
-individuals with a high degree of accuracy.
+individuals with an improvement over our baseline measure. Finally, we 
+conclude with future directions of research in Section~\ref{sec:conclusion}.
 
 \section{Prior Work}
 \label{sec:prior}
@@ -185,7 +187,8 @@ preferring to stick to their comfort zones in both questions and answers. As a
 result, the graph structure is much looser. The largest weakly connected
 component (WCC) is an order of magnitude larger than the largest SCC on Super
 User and it suggests distinct roles of \textit{questioners} and \textit{answers}
-with relatively little overlap.
+with relatively little overlap. We explore the consequences of the graph structure
+differences in Section~\ref{sec:model} and during evaluation in Section~\ref{eval}.
 
 \section{Model and Features}
 \label{sec:model}
@@ -431,7 +434,6 @@ determining the exact value of karma (Section~\ref{sec:regression}) we also
 identified high-karma users in our dataset via classification
 (Section~\ref{sec:classification}). Our results are summarized in
 Table~\ref{tab:eval}. 
-
 \begin{table*}
 \centering
 \begin{tabular}{|r| l l l | l l l|}
@@ -441,16 +443,16 @@ Table~\ref{tab:eval}.
 \textbf{AUC} & \textbf{RMSE} & $\textbf{R}^2$ \\
 \hline
 Baseline & 0.63  & 563.17 & 0.55 & 0.75 & 187.35 & 0.96 \\
-Weighted PageRank & \textbf{0.76} (logit)  & 484.44 & 0.67 & 0.20 & 998.87  & 0.00 \\
-HITS & 0.72 (logit) & 618.16 & 0.62 & 0.68 (logit) & 292.60  & 0.91 \\
-Constraint & 0.57 & 642.56 (RF) & 0.41 & 0.60 & 396.51 (RF) & 0.84 \\
+Weighted PageRank & \textbf{0.76} {\tiny (logit)}  & 484.44 & 0.67 & 0.20 & 998.87  & 0.00 \\
+HITS & 0.72 {\tiny (logit)} & 618.16 & 0.62 & 0.68 {\tiny (logit)} & 292.60  & 0.91 \\
+Constraint & 0.57 & 642.56 {\tiny(RF)} & 0.41 & 0.60 & 396.51 {\tiny(RF)} & 0.84 \\
 Textual & 0.19  & 825.36 & 0.04 & 0.51 & 987.82 & 0.01 \\
-LDA Rank & 0.75 (logit) & 502.13 & 0.64 & 0.31 & 991.31 & 0.00 \\
+LDA Rank & 0.75 {\tiny (logit)} & 502.13 & 0.64 & 0.31 & 991.31 & 0.00 \\
 
 Baseline+Constraint & 0.69 & 562.63 & 0.55 & 0.71 & 187.17 & 0.96 \\
 Baseline+Textual & 0.64 & 561.79 & 0.55 & 0.72 & 187.32 & 0.96 \\
 
-All Features & 0.75 & \textbf{483.1} (RF) & \textbf{0.67} (RF) &
+All Features & 0.75 & \textbf{483.1} {\tiny(RF)} & \textbf{0.67} {\tiny(RF)} &
 \textbf{0.78} & \textbf{184.89} & \textbf{0.97} \\
 \hline
 \end{tabular}
@@ -559,6 +561,7 @@ than random on both networks but also outperformed by other features.
 % TODO: why is Super user cumulative performance high? No idea..
 
 \section{Conclusion}
+\label{sec:conclusion}
 
 In this paper, we created a interaction network model that is able to accurately
 identify ``famous users'' in two disparate communities: Hacker News and
