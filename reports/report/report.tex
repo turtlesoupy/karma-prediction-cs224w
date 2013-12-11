@@ -580,29 +580,29 @@ notice that we are better at ranking the entire set of users on Hacker News, but
 on Super User we are better at ranking the famous users. Our hypothesis is that
 Super User's reputation only starts to differentiate itself for famous users because
 there are a lot of low reputation users who ask and answer very few questions,
-or very niche questions. So, it is
-harder to be ``noticed'' on Stack Overflow unless one without focusing on the quality
-of answers. On Hacker News, where every comment gets attention, we 
+or very niche questions. So, it is harder to be ``noticed'' on Stack Overflow 
+without quality answers. On Hacker News, where every comment gets attention, we 
 find granularity in karma values of less-famous users as well.  Conversely, because
 of the tighter community structure of Hacker News, famous users are relatively
 close together in scores, and therefore harder to differentiate. This effect was
 observed in the exponentially damped karma distribution of Hacker News (Figure~\ref{fig:powerlaws}).
 
 \subsection{Prediction examples}
+To demonstrate our results, we selected the top 10 gold users 
+and top 10 predicted users for karma and reputation on both networks
+and empirically compared their actual scores with predicted scores. 
+7 of the highest gold users on HN and 8 of the highest on SU 
+are also predicted as top-10 by us.
 
-Finally, we pick the top 10 gold users and top 10 predicted users for karma and
-reputation on both networks, and empirically compare their actual scores with
-predicted scores. We observe 7 of the highest gold users on HN and 8 of the
-highest on SU were also predicted as top-10 by us.
-
-Some scores are particularly interesting -- on Hacker News, for example, we
-predict a score of 25995 for user \textt{petercooper} with actual karma 26332 --
+Some scores are particularly interesting -- on Hacker News, we
+predict a score of 25995 for user \texttt{petercooper} with actual karma 26332 --
 a difference of 1.2\%. On the other hand, we predict a value of 6140 for user
-\textt{nickbb}, while their actual karma is 27593. However, on closer inspection
-we find that 90\% of their karma actually comes from submissions instead of
-comments, which is something we do not use in our prediction task since it does
-not yield a suitable interaction graph. On Super User, where 100\% of one's
-reputation is earned through questions and answers, we observe a median
+\texttt{nickbb}, while their actual karma is 27593. However, on closer inspection
+we find that 88.92\% of their karma score from submissions instead of
+comments. We were unable to incorporate submissions since they do not have
+a clear mapping into an interaction graph. Overall, we observe a median difference of
+20.80\% in the Hacker News top ten. On Super User, where all reputation is earned 
+through questions and answers, we observe a median
 difference of 27\% between predicted and actual scores.
 
 \section{Conclusion}
