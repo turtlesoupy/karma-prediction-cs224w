@@ -420,7 +420,7 @@ generalize to networks without an explicit notion of karma. In addition to
 determining the exact value of karma (Section~\ref{sec:regression}) we also
 identified high-karma users in our dataset via classification
 (Section~\ref{sec:classification}). Our results are summarized in
-Table~\ref{tab:eval}.
+Table~\ref{tab:eval}. 
 
 \begin{table*}
 \centering
@@ -475,27 +475,31 @@ classifier and evaluate our performance by the area under precision/recall
 curve.
 
 We use a baseline model taken from \citet{movshovitzanalysis}, attempting to
-classify famouse users by the length of time they have been members and the
+classify famous users by the length of time they have been members and the
 number of posts they've made. As Table~\ref{tab:eval} shows, the performance on
 both datasets is quite respectable: we can get up to 63\% AUC on HN and 75\% AUC
 on SU by looking at just these features.
 
-We selectively added different classes of features to our model to compare
-classification performance. The Weighted PageRank and HITS scores gave the
-largest increase over the baseline for the Hacker News website, underscoring the
-focus on interaction with multiple users in gathering karma.  With the
-combination of PageRank, HITS, centrality and textual features, we achieved more
-than 10\% increase in AUC on Hacker News.
+In our anaylsis, we are less interested in raw performance and more interested in 
+simple features that might generalize
+to graphs without an explicit measurement of karma. As such, we also built classifiers
+with more limited subsets of our features to determine how well they perform. Of particular note,
+we can achieve our \textit{best} famous prediction performance (0.76 AUC) 
+on Hacker News by performing PageRank on a weighted version of the graph and training
+a logistic regression classifier on the result. Other Link Analysis centrality measures 
+appear to have similar performance, indicating that \textit{the primary indicator of karma 
+is centrality} on Hacker News.
 
-On the other, most measures lowered classification scores on Super User, which
-further confirms our hypothesis that reputation on Super User is mostly
-determined by quantity of answers, not one's authoritativeness or involvement
-with the community.
+Contrastly, weighted PageRank gives terrible performance on our SuperUser dataset
+(0.20 AUC Vs\. 0.97 best). As we noted in Figure~\ref{fig:correlation}, it matters
+more what kind of questions you \textit{answer} on SuperUser than those you 
+\textit{ask}: indicating a measure the hub score would perform better than
+the authority score. Table~\ref{tab:eval} shows that HITS can boost performance
+on SuperUser up to 0.68. Still, all network analysis measures on SuperUser 
+are outperformed by looking only at our baseline of number of posts and the length
+of time. This may be an indication of SuperUser being a newer community, and the
+way reputation is assigned (rewarding quantity of answers more than quality of answers).
 
-The conclusion we make from this analysis, then, is that question-answering
-websites rely less on a sense of community in determining reputation, and that
-simpler, direct measures of contribution volume are better indicators of whether
-a user will become ``famous''.
 
 \subsection{Karma/Reputation Regression}
 \label{sec:regression}
