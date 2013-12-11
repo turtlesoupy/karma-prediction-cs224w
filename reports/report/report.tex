@@ -489,7 +489,7 @@ appear to have similar performance, indicating that \textit{the primary indicato
 is centrality} on Hacker News.
 
 In contrast, weighted PageRank gives terrible performance on our Super User dataset
-(0.20 AUC vs \. 0.97 best). As we noted in Figure~\ref{fig:correlation}, it matters
+(0.20 AUC vs \. 0.78 best). As we noted in Figure~\ref{fig:correlation}, it matters
 more what kind of questions you \textit{answer} on Super User than those you 
 \textit{ask}: indicating a measure the hub score would perform better than
 the authority score. Table~\ref{tab:eval} shows that HITS can boost performance
@@ -508,7 +508,7 @@ This shows that it is less important to be a \textit{topic expert} than it is to
 \textit{expert}.
 
 All of our features seem to have linear and non-linear dependencies between them. When we combined
-them into a big classification model, Super User classification scores improved mildly (to 0.97 AUC)
+them into a big classification model, Super User classification scores improved mildly (to 0.78 AUC)
 but the Hacker News score is slightly worse than just using weighted PageRank alone. The performance
 further suggests that network centrality is the most important feature in karma.
 
