@@ -41,7 +41,7 @@ member of the community). In this paper, we describe the range of network
 characteristics, interactions, and temporal factors that affect the accumulation
 of karma points. 
 
-In order to confirm our intuitions about influential network chracateristics, 
+In order to confirm our intuitions about influential network characteristics, 
 we evaluate our features on datasets that contain an explicit
 measure of karma. However, our primary motivation in developing a model that
 enables generalization to \textbf{private communities} without a concept
@@ -120,7 +120,7 @@ An anonymized data dump of the entire series of websites is released every three
 months\footnote{http://www.clearbits.net/creators/146-stack-exchange-data-dump}
 in XML format. We wrote a Python script to parse the XML data and extract
 relevant fields. We chose to focus on \textbf{Super User} website since it
-has a managable amount of data.
+has a manageable amount of data.
 
 We converted our dataset into an interaction graph by 
 collecting $(\text{replier}, \text{parent poster})$. A summary of our datasets is
@@ -192,7 +192,7 @@ as expected.
 
 One model that seems intuitive is that high reputation users tend to attach to
 other high reputation users, forming so-called \textit{karma cliques}. We
-initially tested this hypothesis by logarithmatically-bucketing karma/reputation
+initially tested this hypothesis by logarithmically-bucketing karma/reputation
 and computing \citet{newman2003mixing}'s assortativity over karma levels. This
 yields relatively low assortativity of $0.015$ and $0.040$ on Hacker News and
 SuperUser respectively.
@@ -261,21 +261,21 @@ PageRank: vanilla and a version where transition probability is proportional to
 the number of replies. Our weighted variant is our most linearly predictive
 feature for karma ($\rho = 0.85$ Vs. $\rho=0.79$ vanilla).
 Figure~\ref{fig:correlation} shows that with the exception of closeness, other
-centrality measures are highly correlated with karma.  Our hub score correlation
-is slightly lower than authority score which suggests a slight bias for high
-quality content over replying to other quality contributors.
+centrality measures are highly correlated with karma on Hacker News.  
+Our hub score correlation is slightly lower than authority score and suggests 
+a slight bias for high quality content over replying to other contributors.
 
-Centrality measures on SuperUser further support the evidence of distinct
+Centrality measures on SuperUser further support the evidence distinct
 ``questioner'' and ``answerer'' roles noted in Section~\ref{sec:karma_cliques}.
 Unlike Hacker News, Figure~\ref{fig:correlation}, shows no clear linear
 correlations between our centrality measures. In particular, PageRank and
-authority scores do not correlate at all to reputation. In contrast, a user's
-in-degree and hub is directly related. We constructed the SuperUser graph as
-directed edges between answerer and poster which suggest that on SuperUser
+authority scores do not correlate at all to reputation. In contrast,  in-degree 
+and hub score are directly related to reputation. Since edges are directed from answerer
+to poster, it seems that on SuperUser
 \textit{it doesn't matter who answers you, it matters whether you answer others}.
 
 Although betweenness also appears to play a role on SuperUser, we see that
-both hub score and betweeneness both correlate with the out-degree of nodes.
+both hub score and betweenness both correlate with the out-degree of nodes.
 We believe this is because the weak component structure outlined in 
 Table~\ref{tab:graphstats}. Obviously, more shortest paths will pass through a
 node of high out-degree in a network that is primarily weakly connected.
@@ -290,10 +290,8 @@ node of high out-degree in a network that is primarily weakly connected.
 
 Figure~\ref{fig:closeness} shows a histogram of another measure of centrality --
 closeness, or the inverse of the sum of distances from a node to all other
-nodes.  Although not particularly predictive of karma or reputation, the
-closeness centrality distribution is similar in both networks. For Hacker News,
-it appears that nodes are closer together in terms of shortest paths (closeness
-between $0.3$ and $0.4$ for the majority of values), while on SuperUser nodes
+nodes. For Hacker News, nodes are closer together in terms of shortest paths 
+(closeness between $0.3$ and $0.4$ for the majority of values), while on SuperUser nodes
 are further away (near zero closeness for most values). This appears to reflect
 the stronger sense of community on Hacker News, and the consequent ease of
 information spread as a result.
@@ -304,17 +302,17 @@ information spread as a result.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{constraint_correlation-png}
-\caption{Scatter plot between $\frac{1}{\text{constraint}}$ and karma}
+\caption{Scatter plot between $\frac{1}{\text{constraint} + 0.05}$ and karma}
 \end{figure}
 
 We also compute the network constraint for each node in both networks and plot
-the constraint values against karma. We notice empirical evidence of a strong
+the constraint values against karma. We notice empirical evidence of some 
 inverse correlation between the two for both networks, i.e that high karma and
 reputation score users have lower constraint scores. This is in line with the
 intuition that a high karma person would tend to have interactions across a
-large, disparate set of users.
-
-% TODO: Need to add correlation score of 1 / constraint vs karma and a plot
+large, disparate set of users. As we discuss in Section~\ref{sec:eval}, low constraint
+appears to be a necessary but not sufficient property for high karma: there are
+many users with low constraint and low karma.
 
 \subsection{Textual Features}
 
@@ -333,7 +331,7 @@ in influence and karma. As we'll see below, this isn't necessarily the case.
 \end{figure}
 
 Figure~\ref{fig:sentiment} shows a scatter plot comparing user karma
-against user sentiment. We compute user sentiment concatinating all
+against user sentiment. We compute user sentiment by concatenating all
 their replies together and running Python's pattern module \citet{de2012pattern}, 
 which implements sentiment classification using a fixed sentiment lexicon.  Both
 Hacker News and SuperUser have a slight positive bias (mean polarity of 0.11 and
@@ -396,15 +394,15 @@ on the interval $[10.4, 23.2]$. Here, the lowest topic (number 3 at 10.4 AEK) is
 associated with words such as \textit{energy, english, countries, europe,
 water}. The highest topic (number 0 at 23.2 AEK) is associated with words such
 as \textit{startups, customer, marketing, revenue, founders}. As the Hacker News
-originated with a startup incubator this matchup seems to make intuitive sense:
+originated with a startup incubator this match seems to make intuitive sense:
 more karma mass lies in topics central to the site.
 
 Building on the intuition of different expected karma, we tried running a variant of 
 PageRank where the transition probability is replaced with the topic probability of 
 the reply. Intuitively, this would allow us to identify ``topic experts'' in the 
 community who have high karma. Unfortunately, the rank vectors were highly correlated
-with each other and didn't appear to provide much new information. This is a reflection 
-of the high-karma users having broad knowledge bases as identified in 
+with each other and didn't appear to provide much new information. The correlation is 
+a reflection of high-karma users having the broad knowledge bases identified in 
 Figure~\ref{fig:lda_kl}.
 
 
@@ -418,8 +416,8 @@ information. This allows us to validate our features and see how well they might
 generalize to networks without an explicit notion of karma. In addition to
 determining the exact value of karma (Section~\ref{sec:regression}) we also
 identified high-karma users in our dataset via classification
-(Section~\ref{sec:classification}). Our results are summarized in
-Table~\ref{tab:eval}. 
+(Section~\ref{sec:classification}). The results of running prediction on 
+our validation set are summarized in Table~\ref{tab:eval}. 
 \begin{table*}
 \centering
 \begin{tabular}{|r| l l l | l l l|}
@@ -462,15 +460,16 @@ while regression uses ordinary least squares.}
 \label{fig:classification}
 \end{figure}
 
-In our famous prediction task, we determine how well we can predict users that
+In our famous prediction task, we predict users that
 pass a certain threshold of karma. Our power law distributions in
-Figure~\ref{fig:powerlaws} suggest that we will have infinite moments, so we
+Figure~\ref{fig:powerlaws} suggests that we will have infinite moments, so we
 chose to set a threshold based on the ``top 2.5\%'' of users (have more karma
 than 97.5\% of others) instead of looking at standard deviations. This
 corresponds to thresholds set 1308 and 350 for Hacker News and SuperUser
-respectively.  To capture non-lienarities in the data we use a random forest
+respectively.  To capture non-linearities in the data we use a random forest
 classifier and evaluate our performance by the area under precision/recall
-curve.
+curve. We also ran a logistic regression classifier to rule out some 
+learning biases.
 
 We use a baseline model taken from \citet{movshovitzanalysis}, attempting to
 classify famous users by the length of time they have been members and the
@@ -525,7 +524,7 @@ further suggests that network centrality is the most important feature in karma.
 In our regression task, we attempt to predict karma values \textit{directly}
 utilizing the same dataset as used in our famous prediction task. Our
 improvement patterns mostly match that of our classification although our scores
-(as defined by RMSE) are seemingly poor. Figure~\ref{fig:residuals} shows a plot
+(as quantified by RMSE) are modest. Figure~\ref{fig:residuals} shows a plot
 of predicted karma/reputation Vs.\ actual karma/reputation. Here, we can see that
 while we are relatively successful at identifying ``famous'' individuals, we are
 much less successful with lower-karma users.
@@ -549,8 +548,8 @@ than random on both networks but also outperformed by other features.
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this paper, we created a interaction network model that is able to accurately
-identify ``famous users'' in two disparate communities: Hacker News and
+In this paper, we discuss the network factors affecting \textit{karma and reputation}
+in two disparate communities: Hacker News and
 SuperUser. The network structure of these communities is quite different, with
 Hacker News having users that tie together others into a large strongly
 connected component whereas SuperUser users fall into roles of ``questioners''
@@ -559,18 +558,18 @@ differences in structure, we find that network \textit{centrality} measures are
 the strongest indicators of a node's karma or reputation. Beyond centrality and
 almost without exception, high karma users have a large number of ``weak ties''
 (as measured by \textit{constraint}) and act as bridges between different parts
-of the network (large \textit{betweeneness}). In additinon to network
-properties, we find that although there are some differences in karma models
+of the network (large \textit{betweenness}). We find that content plays less of a role
+in karma: although there are some differences in karma models
 between \textit{topics} of discussion, most high-karma users have broad
 knowledge bases with neutral sentiment. 
 
-We recognize a certain amount of randomness inherent in voting patterns in both
-networks (scores do not depend on contribution alone), thus limiting our ability
-to describe predic karma and reputation scores to high accuracy. However, we
-think that the efficacy of centrality measures is undoubtedly useful in the
-prediction task, and the model developed here can be applied to do the broad
-prediction task in networks without an explicit notion of karma, and look
-forward to analyzing more private datasets in further studies.
+We recognize a certain amount of randomness inherent in the voting patterns 
+of both networks that scores do not depend on contribution alone. Thus, 
+the ``perfect classifier'' may be  impossible to create. However, the efficacy 
+of centrality measures  is undoubtedly useful in the prediction task. 
+The features we developed can be applied to the broader influence-identification 
+task in networks without an explicit notion of karma. We are looking forward
+to analyzing these private datasets in future work.
 
 \bibliography{report}{} \bibliographystyle{acl2012}
 
